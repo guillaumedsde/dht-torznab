@@ -1,0 +1,25 @@
+version: "2.4"
+
+services:
+  magneticod:
+    image: guillaumedsde/magneticod-distroless:v0.12.0
+    build:
+      dockerfile: magneticod.Dockerfile
+      context: .
+      args:
+        MAGNETICOD_VERSION: master
+    command: 
+      - --database=beanstalkd://beanstalkd:11300/magneticod_tube
+  beanstalkd:
+    image: beanstalkd-distroless:latest
+    build:
+      dockerfile: beanstalkd.Dockerfile
+      context: .
+      args:
+        BEANSTALKD_VERSION: "1.12"
+    command:
+      - -z 1048560
+      - -b /data
+      - -f 2400000
+    volumes:
+      - ./beanstalkd-data:/data
