@@ -3,6 +3,8 @@ version: "2.4"
 services:
   magneticod:
     image: guillaumedsde/magneticod-distroless:v0.12.0
+    depends_on:
+      - beanstalkd
     build:
       dockerfile: magneticod.Dockerfile
       context: .
@@ -10,6 +12,10 @@ services:
         MAGNETICOD_VERSION: master
     command: 
       - --database=beanstalkd://beanstalkd:11300/magneticod_tube
+      - --verbose
+      - --leech-max-n=200
+      - --indexer-interval=1
+      - --indexer-max-neighbors=2000
   beanstalkd:
     image: beanstalkd-distroless:latest
     build:
@@ -19,7 +25,13 @@ services:
         BEANSTALKD_VERSION: "1.12"
     command:
       - -z 1048560
-      - -b /data
       - -f 2400000
-    volumes:
-      - ./beanstalkd-data:/data
+    ports:
+      - 11300:11300
+  postgres:
+    image: postgres:13-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: torznab
+      POSTGRES_PASSWORD: torznab
