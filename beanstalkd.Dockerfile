@@ -30,6 +30,8 @@ VOLUME /data
 # https://github.com/moby/moby/issues/2259
 COPY --chown=nonroot:nonroot --from=build /data /data
 
+WORKDIR /data
+
 ENTRYPOINT [ "/beanstalkd" ]
 
 EXPOSE 11300
