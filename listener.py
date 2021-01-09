@@ -5,12 +5,11 @@ from typing import Dict, Iterator, List, Union
 
 import django
 import greenstalk
+from environs import Env
 
 django.setup()
 
-from environs import Env
-
-from api import models
+from api import models  # noqa: E402
 
 
 def create_torrent_files(
