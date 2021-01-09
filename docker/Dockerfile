@@ -1,4 +1,4 @@
-FROM python:3.9-buster as build
+FROM python:3.8-buster as build
 
 ARG PIPENV_VENV_IN_PROJECT="enabled"
 
@@ -11,7 +11,7 @@ COPY Pipfile* ./
 
 RUN pipenv install --dev --deploy
 
-FROM python:3.9-slim-buster
+FROM python:3.8-slim-buster
 
 USER 1000
 
