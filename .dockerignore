@@ -2,8 +2,9 @@
 **
 
 # Allow files and directories
-!Dockerfile
+!docker/
 !api/
 !torznab/
 !manage.py
+!listener.py
 !Pipfile*
