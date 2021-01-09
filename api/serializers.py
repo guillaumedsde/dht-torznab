@@ -1,9 +1,9 @@
-from django.urls import path, include
-from api import models
+import urllib.parse
 
+from django.urls import include, path
 from rest_framework import serializers, viewsets
 
-import urllib.parse
+from api import models
 
 
 class TorrentSerializer(serializers.ModelSerializer):

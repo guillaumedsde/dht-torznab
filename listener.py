@@ -1,19 +1,16 @@
 #!/usr/bin/env python
-from typing import Dict
-from typing import Union
-from typing import Iterator
-from typing import List
-from multiprocessing.pool import ThreadPool
-
-import greenstalk
-
 import json
+from multiprocessing.pool import ThreadPool
+from typing import Dict, Iterator, List, Union
+
 import django
+import greenstalk
 
 django.setup()
 
-from api import models
 from environs import Env
+
+from api import models
 
 
 def create_torrent_files(
