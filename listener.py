@@ -1,46 +1,50 @@
+from typing import Dict
+from typing import Union
+from typing import Iterator
+from typing import List
+from multiprocessing.pool import ThreadPool
+
 import greenstalk
 
 import json
+import django
 
-from api import schemas
+django.setup()
+
 from api import models
-from api import database
 
-db_client = database.SessionLocal()
 
-with greenstalk.Client(("127.0.0.1", 11300)) as bs_client:
-    bs_client.watch("magneticod_tube")
-    while True:
-        job = bs_client.reserve()
-        torrent_dict = json.loads(job.body)
+def create_torrent_files(
+    file_dicts: List[Dict[str, Union[str, int]]], torrent: models.Torrent
+) -> Iterator[models.File]:
+    for file_dict in file_dicts:
+        yield models.File(**file_dict, torrent=torrent)
 
-        torrent_schema = schemas.TorrentCreate(
-            info_hash=torrent_dict["infoHash"], name=torrent_dict["name"]
-        )
-        db_torrent = models.Torrent(**torrent_schema.dict())
 
-        db_client.add(db_torrent)
-        db_client.commit()
-        db_client.refresh(db_torrent)
+def create_torrent(job: greenstalk.Job):
+    torrent_dict = json.loads(job.body)
+    torrent = models.Torrent(
+        info_hash=torrent_dict["infoHash"], name=torrent_dict["name"]
+    )
 
-        print(db_torrent.id)
+    torrent.save()
 
-        for file in torrent_dict["files"]:
-            file_schema = schemas.FileCreate(**file)
-            db_file = models.File(**file_schema.dict(), torrent_id=db_torrent.id)
-            db_client.add(db_file)
-            db_client.commit()
-            db_client.refresh(db_file)
+    models.File.objects.bulk_create(
+        list(create_torrent_files(torrent_dict["files"], torrent))
+    )
 
-        bs_client.delete(job)
+    return torrent
 
-# {
-#     "infoHash": "37015fcca56a404ee5163f4892bc2934cf809a4a",
-#     "name": "The.Great.Gatsby.2013.2160p.BluRay.HEVC.DTS-HD.MA.5.1.IVA(2xRUS.UKR.ENG).mkv",
-#     "files": [
-#         {
-#             "size": 76148384524,
-#             "path": "The.Great.Gatsby.2013.2160p.BluRay.HEVC.DTS-HD.MA.5.1.IVA(2xRUS.UKR.ENG).mkv",
-#         }
-#     ],
-# }
+
+if __name__ == "__main__":
+
+    with greenstalk.Client(("127.0.0.1", 11300)) as bs_client, ThreadPool(
+        processes=4
+    ) as thread_pool:
+        bs_client.watch("magneticod_tube")
+
+        while True:
+            job = bs_client.reserve()
+
+            thread_pool.apply_async(func=create_torrent, args=[job], callback=print, error_callback=print)
+            bs_client.delete(job)

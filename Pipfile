@@ -4,15 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+django = "==3.1.*"
+djangorestframework = "==3.12.*"
 greenstalk = "*"
-sqlalchemy = "*"
-fastapi = "*"
-psycopg2-binary = "*"
-uvicorn = "*"
 
 [dev-packages]
 flake8 = "*"
 black = "==20.8b1"
+bandit = "*"
+isort = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.9"
