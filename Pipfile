@@ -7,7 +7,10 @@ name = "pypi"
 django = "==3.1.*"
 djangorestframework = "==3.12.*"
 greenstalk = "*"
-environs = {extras = ["django"], version = "*"}
+environs = { extras = ["django"], version = "*" }
+psycopg2-binary = "*"
+uvicorn = "*"
+djangorestframework-xml = "*"
 
 [dev-packages]
 flake8 = "*"

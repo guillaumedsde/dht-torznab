@@ -15,4 +15,4 @@ class Torrent(models.Model):
 class File(models.Model):
     path = models.TextField()
     size = models.BigIntegerField()
-    torrent = models.ForeignKey(Torrent, on_delete=models.CASCADE)
+    torrent = models.ForeignKey(Torrent, on_delete=models.CASCADE, related_name="files")
