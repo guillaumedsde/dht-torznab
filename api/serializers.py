@@ -37,4 +37,4 @@ class TorrentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Torrent
-        fields = ["size", "files", "infohash", "magneturl"]
+        fields = ["id", "name", "size", "files", "infohash", "magneturl"]
