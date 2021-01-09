@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0001_initial'),
+        ("api", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='file',
-            name='torrent',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='api.torrent'),
+            model_name="file",
+            name="torrent",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="files",
+                to="api.torrent",
+            ),
         ),
     ]
