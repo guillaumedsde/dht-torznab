@@ -1,12 +1,10 @@
-from django.db import models
 import uuid
+
+from django.db import models
 
 
 class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    def __str__(self):
-        return self.name
 
 
 class Torrent(BaseModel):
@@ -17,8 +15,14 @@ class Torrent(BaseModel):
     )
     discovered_on = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 
 class File(BaseModel):
     path = models.TextField()
     size = models.BigIntegerField()
     torrent = models.ForeignKey(Torrent, on_delete=models.CASCADE, related_name="files")
+
+    def __str__(self):
+        return self.path
