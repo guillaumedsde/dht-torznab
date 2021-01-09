@@ -6,7 +6,7 @@ services:
     depends_on:
       - beanstalkd
     build:
-      dockerfile: magneticod.Dockerfile
+      dockerfile: docker/magneticod.Dockerfile
       context: .
       args:
         MAGNETICOD_VERSION: master
@@ -19,7 +19,7 @@ services:
   beanstalkd:
     image: beanstalkd-distroless:latest
     build:
-      dockerfile: beanstalkd.Dockerfile
+      dockerfile: docker/beanstalkd.Dockerfile
       context: .
       args:
         BEANSTALKD_VERSION: "1.12"
