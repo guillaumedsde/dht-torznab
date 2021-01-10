@@ -19,6 +19,8 @@ isort = "*"
 mypy = "*"
 pylint = "*"
 pytype = "*"
+django-stubs = "*"
+djangorestframework-stubs = "*"
 
 [requires]
 python_version = "3.8"
