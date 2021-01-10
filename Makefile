@@ -6,6 +6,10 @@ safety:
 isort:
 	isort .
 
+.PHONY: isort-check
+isort-check:
+	isort . --check
+
 .PHONY: flake8
 flake8:
 	flake8 .
@@ -13,6 +17,10 @@ flake8:
 .PHONY: black
 black:
 	black .
+
+.PHONY: black-check
+black-check:
+	black --check .
 
 .PHONY: bandit
 bandit:
@@ -27,5 +35,7 @@ pytype:
 	pytype .
 
 .PHONY: checks
-checks: isort flake8 black bandit mypy pytype safety
+checks: isort-check flake8 black-check bandit mypy pytype safety
 
+.PHONY: format
+format: isort black
