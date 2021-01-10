@@ -16,7 +16,7 @@ black:
 
 .PHONY: bandit
 bandit:
-	bandit -r .
+	bandit -r *.py api/*.py torznab/*.py
 
 .PHONY: mypy
 mypy:
