@@ -1,0 +1,65 @@
+
+stages:
+  - analyse
+
+.python-check:
+  image: python:3.8-buster
+  stage: analyse
+  variables:
+    PIPENV_VENV_IN_PROJECT: enabled
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  before_script:
+    - pip install --no-cache-dir pipenv==2020.11.15
+    - pipenv install --dev --deploy
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .venv/
+      - .cache/pip
+
+black: 
+  extends: .python-check
+  script: 
+    - make black-check
+
+flake8: 
+  extends: .python-check
+  script: 
+    - make flake8
+
+bandit: 
+  extends: .python-check
+  script: 
+    - make bandit
+
+isort: 
+  extends: .python-check
+  script: 
+    - make isort-check
+
+safety: 
+  extends: .python-check
+  script: 
+    - make safety
+
+mypy: 
+  extends: .python-check
+  script: 
+    - make mypy
+  cache:
+    key: ${CI_JOB_NAME}-${CI_COMMIT_REF_SLUG}
+    paths:
+      - .venv/
+      - .cache/pip
+      - .mypy_cache
+
+pytype: 
+  extends: .python-check
+  script: 
+    - make pytype
+  cache:
+    key: ${CI_JOB_NAME}-${CI_COMMIT_REF_SLUG}
+    paths:
+      - .venv/
+      - .cache/pip
+      - .pytype
