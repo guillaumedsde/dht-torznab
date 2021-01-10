@@ -30,6 +30,8 @@ SECRET_KEY = "x)#v1plj2$+v^secz%%1u2_4ol(ek@62+_sprb!u!2)9mr3bg-"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
 
+ADMIN_ENABLED = env.bool("ADMIN_ENABLED", default=False)
+
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", ["localhost"])
 
 
@@ -37,7 +39,6 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", ["localhost"])
 
 INSTALLED_APPS = [
     "api.apps.ApiConfig",
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -46,6 +47,10 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "rest_framework",
 ]
+
+if ADMIN_ENABLED is True:
+    INSTALLED_APPS.append("django.contrib.admin")
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -130,6 +135,11 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ],
+    # Pagination
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
+    # Renderer
+    "DEFAULT_RENDERER_CLASSES": "rest_framework.renderers.BrowsableAPIRenderer"
+    if DEBUG
+    else "rest_framework.renderers.JSONRenderer",
 }
