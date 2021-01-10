@@ -1,7 +1,6 @@
 import urllib.parse
 
-from django.urls import include, path
-from rest_framework import serializers, viewsets
+from rest_framework import serializers
 
 from api import models
 
