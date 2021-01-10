@@ -37,6 +37,9 @@ services:
       POSTGRES_PASSWORD: torznab
   listener:
     image: torznab-listener:latest
+    depends_on:
+      - postgres
+      - beanstalkd
     build:
       dockerfile: docker/Dockerfile
       context: .
@@ -50,6 +53,8 @@ services:
       DATABASE_URL: postgres://torznab:torznab@postgres:5432/torznab
   api:
     image: torznab-api:latest
+    depends_on:
+      - postgres
     build:
       dockerfile: docker/Dockerfile
       context: .
