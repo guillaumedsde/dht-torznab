@@ -1,8 +1,9 @@
 
 stages:
+  - build
   - analyse
 
-.python-check:
+.python:
   image: python:3.8-buster
   stage: analyse
   variables:
@@ -16,50 +17,48 @@ stages:
     paths:
       - .venv/
       - .cache/pip
+      - .pytype
+      - .mypy_cache
+
+cache-dependencies:
+  extends: .python
+  stage: build
+  script:
+    - echo "Dependencies cached"
+
+
 
 black: 
-  extends: .python-check
+  extends: .python
   script: 
     - make black-check
 
 flake8: 
-  extends: .python-check
+  extends: .python
   script: 
     - make flake8
 
 bandit: 
-  extends: .python-check
+  extends: .python
   script: 
     - make bandit
 
 isort: 
-  extends: .python-check
+  extends: .python
   script: 
     - make isort-check
 
 safety: 
-  extends: .python-check
+  extends: .python
   script: 
     - make safety
 
 mypy: 
-  extends: .python-check
+  extends: .python
   script: 
     - make mypy
-  cache:
-    key: ${CI_JOB_NAME}-${CI_COMMIT_REF_SLUG}
-    paths:
-      - .venv/
-      - .cache/pip
-      - .mypy_cache
 
 pytype: 
   extends: .python-check
   script: 
     - make pytype
-  cache:
-    key: ${CI_JOB_NAME}-${CI_COMMIT_REF_SLUG}
-    paths:
-      - .venv/
-      - .cache/pip
-      - .pytype
