@@ -21,6 +21,13 @@ class Torrent(BaseModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["info_hash", "name"], name="unique-name-info_hash"
+            )
+        ]
+
 
 class File(BaseModel):
     path = models.TextField()
