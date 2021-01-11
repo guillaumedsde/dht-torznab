@@ -27,6 +27,54 @@ cache-dependencies:
   script:
     - echo "Dependencies cached"
 
+.build-docker:
+  # Official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+docker-build-api-master:
+  extends: .build-docker
+  variables:
+    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-crawler/api
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" . -f docker/Dockerfile --target api
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+    - master
+
+docker-build-api:
+  extends: .build-docker
+  variables:
+    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-crawler/api
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" . -f docker/Dockerfile --target api
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  except:
+    - master
+
+docker-build-listener-master:
+  extends: .build-docker
+  variables:
+    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-crawler/listener
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" . -f docker/Dockerfile --target listener
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+    - master
+
+docker-build-listener:
+  extends: .build-docker
+  variables:
+    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-crawler/listener
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" . -f docker/Dockerfile --target listener
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  except:
+    - master
 
 black: 
   extends: .python
