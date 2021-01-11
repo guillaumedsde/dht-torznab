@@ -2,7 +2,7 @@ version: "2.4"
 
 services:
   magneticod:
-    image: guillaumedsde/magneticod-distroless:v0.12.0
+    image: magneticod-distroless:v0.12.0
     depends_on:
       - beanstalkd
     build:
