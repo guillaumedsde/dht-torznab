@@ -43,6 +43,7 @@ services:
     build:
       dockerfile: docker/Dockerfile
       context: .
+      target: dev
     entrypoint: /opt/app/listener.py
     user: 1000:1000
     volumes:
@@ -58,6 +59,7 @@ services:
     build:
       dockerfile: docker/Dockerfile
       context: .
+      target: dev
     user: 1000:1000
     ports:
       - 8080:8080
