@@ -33,13 +33,13 @@ cache-dependencies:
   stage: build
   services:
     - docker:dind
+  variables:
+    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-torznab
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 docker-build-master:
   extends: .build-docker
-  variables:
-    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-crawler
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE/api" . -f docker/Dockerfile --target api
     - docker build --pull -t "$CI_REGISTRY_IMAGE/listener" . -f docker/Dockerfile --target listener
@@ -50,8 +50,6 @@ docker-build-master:
 
 docker-build:
   extends: .build-docker
-  variables:
-    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-crawler
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE/api:$CI_COMMIT_REF_SLUG" . -f docker/Dockerfile --target api
     - docker build --pull -t "$CI_REGISTRY_IMAGE/listener:$CI_COMMIT_REF_SLUG" . -f docker/Dockerfile --target listener
