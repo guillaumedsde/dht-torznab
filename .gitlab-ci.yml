@@ -12,6 +12,7 @@ stages:
   before_script:
     - pip install --no-cache-dir pipenv==2020.11.15
     - pipenv install --dev --deploy
+    - export PATH="$CI_PROJECT_DIR/.venv/bin:$PATH"
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
@@ -25,7 +26,6 @@ cache-dependencies:
   stage: build
   script:
     - echo "Dependencies cached"
-
 
 
 black: 
@@ -59,6 +59,6 @@ mypy:
     - make mypy
 
 pytype: 
-  extends: .python-check
+  extends: .python
   script: 
     - make pytype
