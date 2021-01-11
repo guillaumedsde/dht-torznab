@@ -1,7 +1,8 @@
 
 stages:
-  - build
+  - cache dependencies
   - analyse
+  - build
 
 .python:
   image: python:3.8-buster
@@ -23,40 +24,9 @@ stages:
 
 cache-dependencies:
   extends: .python
-  stage: build
+  stage: cache dependencies
   script:
     - echo "Dependencies cached"
-
-.build-docker:
-  # Official docker image.
-  image: docker:latest
-  stage: build
-  services:
-    - docker:dind
-  variables:
-    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-torznab
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-
-docker-build-master:
-  extends: .build-docker
-  script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/api" . -f docker/Dockerfile --target api
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/listener" . -f docker/Dockerfile --target listener
-    - docker push "$CI_REGISTRY_IMAGE/api"
-    - docker push "$CI_REGISTRY_IMAGE/listener"
-  only:
-    - master
-
-docker-build:
-  extends: .build-docker
-  script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/api:$CI_COMMIT_REF_SLUG" . -f docker/Dockerfile --target api
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/listener:$CI_COMMIT_REF_SLUG" . -f docker/Dockerfile --target listener
-    - docker push "$CI_REGISTRY_IMAGE/api:$CI_COMMIT_REF_SLUG"
-    - docker push "$CI_REGISTRY_IMAGE/listener:$CI_COMMIT_REF_SLUG"
-  except:
-    - master
 
 black: 
   extends: .python
@@ -93,3 +63,34 @@ mypy:
 #   extends: .python
 #   script: 
 #     - make pytype
+
+.build-docker:
+  # Official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  variables:
+    CI_REGISTRY_IMAGE: registry.gitlab.com/guillaumedsde/dht-torznab
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+docker-build-master:
+  extends: .build-docker
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE/api" . -f docker/Dockerfile --target api
+    - docker build --pull -t "$CI_REGISTRY_IMAGE/listener" . -f docker/Dockerfile --target listener
+    - docker push "$CI_REGISTRY_IMAGE/api"
+    - docker push "$CI_REGISTRY_IMAGE/listener"
+  only:
+    - master
+
+docker-build:
+  extends: .build-docker
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE/api:$CI_COMMIT_REF_SLUG" . -f docker/Dockerfile --target api
+    - docker build --pull -t "$CI_REGISTRY_IMAGE/listener:$CI_COMMIT_REF_SLUG" . -f docker/Dockerfile --target listener
+    - docker push "$CI_REGISTRY_IMAGE/api:$CI_COMMIT_REF_SLUG"
+    - docker push "$CI_REGISTRY_IMAGE/listener:$CI_COMMIT_REF_SLUG"
+  except:
+    - master
