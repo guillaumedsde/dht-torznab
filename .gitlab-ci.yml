@@ -58,7 +58,8 @@ mypy:
   script: 
     - make mypy
 
-pytype: 
-  extends: .python
-  script: 
-    - make pytype
+# need to fix this
+# pytype: 
+#   extends: .python
+#   script: 
+#     - make pytype
