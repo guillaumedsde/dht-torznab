@@ -1,4 +1,4 @@
-ARG MAGNETICOD_VERSION=v0.12.0
+ARG MAGNETICOD_VERSION=master
 
 # hadolint ignore=DL3029
 FROM golang:1.15-buster AS build
@@ -13,13 +13,7 @@ RUN git clone https://github.com/boramalper/magnetico.git . \
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
-RUN printf "run: %s \nbuild: %s\n" "$BUILDPLATFORM" "$TARGETPLATFORM"
-
-COPY build/build_binary.sh ./
-
-SHELL ["/bin/bash", "-x", "-o", "pipefail", "-c"]
-RUN chmod +x ./build_binary.sh \
-    && ./build_binary.sh
+RUN make magneticod
 
 RUN mkdir /data
 
@@ -40,7 +34,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vendor="guillaumedsde" \
     org.label-schema.schema-version="1.0"
 
-COPY --from=build /magnetico/magneticod /magneticod
+COPY --from=build /go/bin/magneticod /magneticod
 
 VOLUME /data
 VOLUME /config
