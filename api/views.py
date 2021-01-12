@@ -7,9 +7,15 @@ from api import models
 
 def index(request, *args, **kwargs):
     if function := request.GET.get("t", None):
+        # Search
         if function == "search":
             offset = int(request.GET.get("offset", "0"))
             limit = int(request.GET.get("limit", "25"))
+
+            # Cap limit per page
+            if limit > 50:
+                limit = 50
+
             if query := request.GET.get("q", None):
                 torrents = models.Torrent.objects.prefetch_related("files").filter(
                     name__search=query
@@ -27,11 +33,13 @@ def index(request, *args, **kwargs):
                     "category": function,
                     "url": request.get_full_path(),
                     "offset": offset,
-                    "total": len(torrents)
+                    "total": len(torrents),
                 },
                 content_type="text/xml",
                 status=200,
             )
+
+        # Caps
         if function == "caps":
             return render(
                 request,
