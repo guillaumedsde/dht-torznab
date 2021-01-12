@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caps>
+    <server title="Jackett" />
+    <searching>
+        <search available="yes" supportedParams="q" />
+    </searching>
+    <categories>
+        <category id="1000" name="Console">
+            <subcat id="1010" name="Console/NDS" />
+            <subcat id="1040" name="Console/XBox" />
+        </category>
+        <category id="2000" name="Movies">
+            <subcat id="2040" name="Movies/HD" />
+        </category>
+        <category id="3000" name="Audio">
+            <subcat id="3010" name="Audio/MP3" />
+            <subcat id="3030" name="Audio/Audiobook" />
+            <subcat id="3040" name="Audio/Lossless" />
+        </category>
+        <category id="4000" name="PC">
+            <subcat id="4010" name="PC/0day" />
+            <subcat id="4050" name="PC/Games" />
+        </category>
+        <category id="5000" name="TV">
+            <subcat id="5070" name="TV/Anime" />
+        </category>
+        <category id="6000" name="XXX" />
+        <category id="7000" name="Books">
+            <subcat id="7010" name="Books/Mags" />
+            <subcat id="7020" name="Books/EBook" />
+            <subcat id="7030" name="Books/Comics" />
+            <subcat id="7040" name="Books/Technical" />
+        </category>
+        <category id="8000" name="Other" />
+        <category id="144674" name="adult" />
+        <category id="133393" name="adult amateur" />
+        <category id="108127" name="adult anal" />
+        <category id="134009" name="adult asian" />
+        <category id="145759" name="adult blowjobs" />
+        <category id="137852" name="adult creampie" />
+        <category id="125461" name="adult double p" />
+        <category id="103916" name="adult fisting" />
+        <category id="110669" name="adult hairy" />
+        <category id="111365" name="adult hentai" />
+        <category id="158698" name="adult interracial" />
+        <category id="160706" name="adult lesbian" />
+        <category id="103437" name="adult milf" />
+        <category id="142551" name="adult squirting" />
+        <category id="133643" name="adult tattoo" />
+        <category id="100210" name="application" />
+        <category id="127296" name="audio" />
+        <category id="102640" name="audio music lossless" />
+        <category id="121047" name="audio music mp3" />
+        <category id="113570" name="ebook" />
+        <category id="132906" name="ebook audio book" />
+        <category id="131910" name="ebook comics" />
+        <category id="126539" name="ebook magazine" />
+        <category id="153314" name="ebook tutorial" />
+        <category id="141165" name="game" />
+        <category id="103537" name="game nintendo&quot;" />
+        <category id="117505" name="game pc" />
+        <category id="104622" name="game xbox" />
+        <category id="162489" name="images" />
+        <category id="101280" name="movies divx xvid" />
+        <category id="138096" name="other" />
+        <category id="147871" name="video" />
+        <category id="116700" name="video anime" />
+        <category id="110869" name="video movie dvd" />
+        <category id="144049" name="video movie dvdrip" />
+        <category id="130394" name="video movie hd" />
+        <category id="118986" name="video tv" />
+    </categories>
+</caps>

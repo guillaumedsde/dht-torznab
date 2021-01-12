@@ -5,6 +5,7 @@
         <title>torznab indexer</title>
         <description>API results</description>
         <category>{{ function }}</category>
+        <torznab:response offset="{{ offset }}" total="{{ total }}" />
         {% for torrent in torrents %}
         <item>
             <title>{{ torrent.name }}</title>
