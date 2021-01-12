@@ -1,3 +1,4 @@
+import urllib.parse
 import uuid
 
 from django.db import models
@@ -17,6 +18,21 @@ class Torrent(BaseModel):
         max_length=40
     )
     discovered_on = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def size(self):
+        return sum(file.size for file in self.files.all())
+
+    @property
+    def magneturl(self):
+
+        url_encoded_name = urllib.parse.quote(self.name)
+
+        return f"magnet:?xt=urn:btih:{self.info_hash}&dn={url_encoded_name}"
+
+    @property
+    def nbr_files(self):
+        return len(self.files.all())
 
     def __str__(self):
         return self.name

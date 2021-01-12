@@ -1,10 +1,26 @@
-from rest_framework import filters, viewsets
+from django.http import HttpResponse
+from django.shortcuts import render
 
-from api import models, serializers
+from api import models
 
 
-class TorrentViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = models.Torrent.objects.prefetch_related("files")
-    serializer_class = serializers.TorrentSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["name"]
+def index(request, *args, **kwargs):
+    print(args)
+    print(kwargs)
+    if function := request.GET.get("t", None):
+        if function == "search":
+            if query := request.GET.get("q", None):
+                torrents = models.Torrent.objects.filter(name__search=query)
+                return render(
+                    request,
+                    "index.xml",
+                    {
+                        "torrents": torrents,
+                        "category": function,
+                        "url": request.get_full_path(),
+                    },
+                    content_type="text/xml",
+                    status=200,
+                )
+
+    return HttpResponse("test")

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="1.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:torznab="http://torznab.com/schemas/2015/feed">
+    <channel>
+        <atom:link href="{{ url }}" rel="self" type="application/rss+xml" />
+        <title>torznab indexer</title>
+        <description>API results</description>
+        <category>{{ function }}</category>
+        {% for torrent in torrents %}
+        <item>
+            <title>{{ torrent.name }}</title>
+            <guid isPermaLink="true">{{ torrent.id }}</guid>
+            <link>{{ torrent.magneturl }}</link>
+            <pubDate>{{ torrent.discovered_on }}</pubDate>
+            <size>{{ torrent.size }}</size>
+            <enclosure url="{{ torrent.magneturl }}" length="{{ torrent.size }}" type="application/x-bittorrent;x-scheme-handler/magnet" />
+            <torznab:attr name="size" value="{{ torrent.size }}" />
+            <torznab:attr name="infohash" value="{{ torrent.info_hash }}" />
+            <torznab:attr name="files" value="{{ torrent.nbr_files }}" />
+            <torznab:attr name="magneturl" value="{{ torrent.magneturl }}" />
+        </item>
+        {% endfor %}
+    </channel>
+</rss>

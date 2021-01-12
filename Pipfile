@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 django = "==3.1.*"
-djangorestframework = "==3.12.*"
 greenstalk = "*"
 environs = { extras = ["django"], version = "*" }
 psycopg2-binary = "*"
@@ -20,7 +19,6 @@ mypy = "*"
 pylint = "*"
 pytype = "*"
 django-stubs = "*"
-djangorestframework-stubs = "*"
 
 [requires]
 python_version = "3.8"

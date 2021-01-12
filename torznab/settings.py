@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
-    "rest_framework",
 ]
 
 if ADMIN_ENABLED is True:
@@ -128,20 +127,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
-
-# djangorestframework
-# https://www.django-rest-framework.org/#quickstart
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ],
-    # Pagination
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 25,
-    # Renderer
-    "DEFAULT_RENDERER_CLASS": "rest_framework.renderers.BrowsableAPIRenderer"
-    if DEBUG
-    else "rest_framework.renderers.JSONRenderer",
-}
