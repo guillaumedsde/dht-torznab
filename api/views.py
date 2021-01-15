@@ -20,8 +20,6 @@ def search_torrents(query: Optional[str]):
             .annotate(rank=search_rank)
             .order_by("-rank")
         )
-        for torrent in torrents[:10]:
-            print(torrent.name, torrent.rank)
 
     else:
         torrents = models.Torrent.objects.prefetch_related("files").all()
