@@ -68,3 +68,8 @@ services:
     environment:
       DATABASE_URL: postgres://torznab:torznab@postgres:5432/torznab
       DEBUG: "true"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8000:8080
