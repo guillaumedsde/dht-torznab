@@ -48,6 +48,7 @@ class Torrent(BaseModel):
                 fields=["info_hash", "name"], name="unique-name-info_hash"
             )
         ]
+        ordering = ["-discovered_on"]
 
 
 class File(BaseModel):
@@ -57,3 +58,6 @@ class File(BaseModel):
 
     def __str__(self):
         return self.path
+
+    class Meta:
+        ordering = ["-path"]
