@@ -43,12 +43,15 @@ class Torrent(BaseModel):
         return self.name
 
     class Meta:
+        ordering = ["-discovered_on"]
         constraints = [
             models.UniqueConstraint(
                 fields=["info_hash", "name"], name="unique-name-info_hash"
             )
         ]
-        ordering = ["-discovered_on"]
+        indexes = [
+            models.Index(fields=["name"]),
+        ]
 
 
 class File(BaseModel):
@@ -61,3 +64,10 @@ class File(BaseModel):
 
     class Meta:
         ordering = ["-path"]
+        indexes = [
+            models.Index(
+                fields=[
+                    "path",
+                ]
+            ),
+        ]

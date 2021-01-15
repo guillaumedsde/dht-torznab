@@ -1,6 +1,11 @@
+import operator
+import re
+from functools import reduce
 from typing import Optional, Tuple
 
+from django.contrib.postgres import search
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
@@ -9,9 +14,13 @@ from api import models
 
 def search_torrents(query: Optional[str]):
     if query:
+        # tokenize query
+        search_query = [
+            Q(name__icontains=term) for term in re.split(r"(?u)\b\w\w+\b", query)
+        ]
         torrents = (
             models.Torrent.objects.prefetch_related("files")
-            .filter(name__search=query, files__path__search=query)
+            .filter(reduce(operator.or_, search_query))
             .distinct()
         )
     else:
@@ -27,6 +36,8 @@ def get_search_parameters(request: HttpRequest) -> Tuple[Optional[str], int, int
     # Cap limit per page
     if limit > 50:
         limit = 50
+
+    print(query)
 
     return query, offset, limit
 
@@ -65,9 +76,11 @@ def caps(request: HttpRequest):
 
 def index(request: HttpRequest, *args, **kwargs):
     if function := request.GET.get("t", None):
-        if function == "search":
-            return search(request)
-        elif function == "caps":
+        if function == "caps":
             return caps(request)
+        elif function == "search":
+            return search(request)
+        if function == "movie":
+            return search(request)
 
     return HttpResponse("test")
