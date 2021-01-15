@@ -11,7 +11,7 @@
             <title>{{ torrent.name }}</title>
             <guid isPermaLink="true">{{ torrent.id }}</guid>
             <link>{{ torrent.magneturl }}</link>
-            <pubDate>{{ torrent.discovered_on }}</pubDate>
+            <pubDate>{{ torrent.rfc_2822_discovered_on }}</pubDate>
             <size>{{ torrent.size }}</size>
             <enclosure url="{{ torrent.magneturl }}" length="{{ torrent.size }}" type="application/x-bittorrent;x-scheme-handler/magnet" />
             <torznab:attr name="size" value="{{ torrent.size }}" />

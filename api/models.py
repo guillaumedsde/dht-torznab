@@ -1,5 +1,6 @@
 import urllib.parse
 import uuid
+from email import utils
 
 from django.db import models
 
@@ -33,6 +34,10 @@ class Torrent(BaseModel):
     @property
     def nbr_files(self):
         return len(self.files.all())
+
+    @property
+    def rfc_2822_discovered_on(self):
+        return utils.format_datetime(self.discovered_on)
 
     def __str__(self):
         return self.name
