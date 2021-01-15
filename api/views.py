@@ -5,7 +5,6 @@ from typing import Optional, Tuple
 
 from django.contrib.postgres import search
 from django.core.paginator import Paginator
-from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
@@ -14,15 +13,11 @@ from api import models
 
 def search_torrents(query: Optional[str]):
     if query:
-        # tokenize query
-        search_query = [
-            Q(name__icontains=term) for term in re.split(r"(?u)\b\w\w+\b", query)
-        ]
-        torrents = (
-            models.Torrent.objects.prefetch_related("files")
-            .filter(reduce(operator.or_, search_query))
-            .distinct()
-        )
+        search_query = models.Torrent.objects.prefetch_related("files")
+
+        for token in re.split(r"(?u)\b\w\w+\b", query):
+            search_query = search_query.filter(name__icontains=token)
+        torrents = search_query.distinct()
     else:
         torrents = models.Torrent.objects.prefetch_related("files").all()
     return torrents
