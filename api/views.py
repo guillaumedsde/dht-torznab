@@ -1,9 +1,7 @@
-import operator
-import re
-from functools import reduce
 from typing import Optional, Tuple
 
 from django.contrib.postgres import search
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
@@ -13,11 +11,18 @@ from api import models
 
 def search_torrents(query: Optional[str]):
     if query:
-        search_query = models.Torrent.objects.prefetch_related("files")
+        search_vector = SearchVector("name")
+        search_query = SearchQuery(query, search_type="phrase")
+        search_rank = SearchRank(search_vector, search_query)
 
-        for token in re.split(r"(?u)\b\w\w+\b", query):
-            search_query = search_query.filter(name__icontains=token)
-        torrents = search_query.distinct()
+        torrents = (
+            models.Torrent.objects.prefetch_related("files")
+            .annotate(rank=search_rank)
+            .order_by("-rank")
+        )
+        for torrent in torrents[:10]:
+            print(torrent.name, torrent.rank)
+
     else:
         torrents = models.Torrent.objects.prefetch_related("files").all()
     return torrents
