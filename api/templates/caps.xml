@@ -3,7 +3,7 @@
     <server title="DHT-Torznab" />
     <limits max="50" default="25" />
     <searching>
-        <search available="yes" supportedParams="q" />
+        <search available="yes" />
     </searching>
     <categories>
         <category id="1000" name="Console">
