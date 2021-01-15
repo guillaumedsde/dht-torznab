@@ -9,8 +9,10 @@ from api import models
 
 def search_torrents(query: Optional[str]):
     if query:
-        torrents = models.Torrent.objects.prefetch_related("files").filter(
-            name__search=query
+        torrents = (
+            models.Torrent.objects.prefetch_related("files")
+            .filter(name__search=query, files__path__search=query)
+            .distinct()
         )
     else:
         torrents = models.Torrent.objects.prefetch_related("files").all()
@@ -25,6 +27,7 @@ def get_search_parameters(request: HttpRequest) -> Tuple[Optional[str], int, int
     # Cap limit per page
     if limit > 50:
         limit = 50
+
     return query, offset, limit
 
 
