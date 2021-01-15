@@ -13,9 +13,9 @@ services:
     command: 
       - --database=beanstalkd://beanstalkd:11300/magneticod_tube
       - --verbose
-      - --leech-max-n=200
+      - --leech-max-n=300
       - --indexer-interval=1
-      - --indexer-max-neighbors=2000
+      - --indexer-max-neighbors=5000
   beanstalkd:
     image: beanstalkd-distroless:latest
     build:
