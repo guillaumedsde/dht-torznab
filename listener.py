@@ -5,6 +5,7 @@ from typing import Dict, Iterator, List, Union
 
 import django
 import greenstalk
+from django.contrib.postgres.search import SearchVector
 from environs import Env
 
 django.setup()
@@ -30,6 +31,8 @@ def create_torrent(job: greenstalk.Job):
     models.File.objects.bulk_create(
         list(create_torrent_files(torrent_dict["files"], torrent))
     )
+
+    models.Torrent.objects.update(search_vector=SearchVector("name"))
 
     return torrent
 

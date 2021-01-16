@@ -2,6 +2,8 @@ import urllib.parse
 import uuid
 from email import utils
 
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
 
@@ -19,6 +21,7 @@ class Torrent(BaseModel):
         max_length=40
     )
     discovered_on = models.DateTimeField(auto_now_add=True)
+    search_vector = SearchVectorField(null=True)
 
     @property
     def size(self):
@@ -49,9 +52,7 @@ class Torrent(BaseModel):
                 fields=["info_hash", "name"], name="unique-name-info_hash"
             )
         ]
-        indexes = [
-            models.Index(fields=["name"]),
-        ]
+        indexes = [GinIndex(fields=["search_vector"])]
 
 
 class File(BaseModel):
@@ -64,10 +65,3 @@ class File(BaseModel):
 
     class Meta:
         ordering = ["-path"]
-        indexes = [
-            models.Index(
-                fields=[
-                    "path",
-                ]
-            ),
-        ]
