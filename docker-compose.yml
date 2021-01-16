@@ -35,6 +35,8 @@ services:
     environment:
       POSTGRES_USER: torznab
       POSTGRES_PASSWORD: torznab
+    volumes:
+      - pg-data:/var/lib/postgresql/data
   listener:
     image: torznab-listener:latest
     depends_on:
@@ -73,3 +75,6 @@ services:
     restart: always
     ports:
       - 8000:8080
+
+volumes:
+  pg-data:
