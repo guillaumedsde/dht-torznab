@@ -11,7 +11,7 @@ stages:
     PIPENV_VENV_IN_PROJECT: enabled
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   before_script:
-    - pip install --no-cache-dir pipenv==2020.11.15
+    - pip install pipenv==2020.11.15
     - pipenv install --dev --deploy
     - export PATH="$CI_PROJECT_DIR/.venv/bin:$PATH"
   cache:
