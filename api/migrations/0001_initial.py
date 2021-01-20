@@ -65,7 +65,8 @@ class Migration(migrations.Migration):
                 (
                     "keywords",
                     models.TextField(
-                        help_text="Keywords extracted from torrent name to help with search"
+                        help_text="Keywords extracted from torrent "
+                        "name to help with search"
                     ),
                 ),
                 (
