@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import re
 from multiprocessing.pool import ThreadPool
 from typing import Dict, Iterator, List, Union
 
@@ -9,6 +10,8 @@ from django.contrib.postgres.search import SearchVector
 from environs import Env
 
 django.setup()
+
+SPLIT_TOKENS_REGEX = r"(?u)\b\w\w+\b"
 
 from api import models  # noqa: E402
 
@@ -23,7 +26,9 @@ def create_torrent_files(
 def create_torrent(job: greenstalk.Job):
     torrent_dict = json.loads(job.body)
     torrent = models.Torrent(
-        info_hash=torrent_dict["infoHash"], name=torrent_dict["name"]
+        info_hash=torrent_dict["infoHash"],
+        name=torrent_dict["name"],
+        keywords=" ".join(re.findall(SPLIT_TOKENS_REGEX, torrent_dict["name"])),
     )
 
     torrent.save()
@@ -32,7 +37,7 @@ def create_torrent(job: greenstalk.Job):
         list(create_torrent_files(torrent_dict["files"], torrent))
     )
 
-    models.Torrent.objects.update(search_vector=SearchVector("name"))
+    models.Torrent.objects.update(search_vector=SearchVector("keywords"))
 
     return torrent
 

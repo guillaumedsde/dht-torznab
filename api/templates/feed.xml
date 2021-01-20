@@ -5,11 +5,11 @@
         <title>torznab indexer</title>
         <description>API results</description>
         <category>{{ function }}</category>
-        <torznab:response offset="{{ offset }}" total="{{ total }}" />
-        {% for torrent in torrents %}
+        <torznab:response offset="{{ offset }}" total="{{ torrent_page.paginator.count }}" />
+        {% for torrent in torrent_page.object_list %}
         <item>
             <title>{{ torrent.name }}</title>
-            <guid isPermaLink="true">{{ torrent.id }}</guid>
+            <guid>{{ torrent.id }}</guid>
             <link>{{ torrent.magneturl }}</link>
             <pubDate>{{ torrent.rfc_2822_discovered_on }}</pubDate>
             <size>{{ torrent.size }}</size>

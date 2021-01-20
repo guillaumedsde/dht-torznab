@@ -21,6 +21,8 @@ class Torrent(BaseModel):
         max_length=40
     )
     discovered_on = models.DateTimeField(auto_now_add=True)
+    keywords = models.TextField()
+
     search_vector = SearchVectorField(null=True)
 
     @property
