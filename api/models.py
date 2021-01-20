@@ -20,8 +20,16 @@ class Torrent(BaseModel):
         # SHA1 size
         max_length=40
     )
-    discovered_on = models.DateTimeField(auto_now_add=True)
-    keywords = models.TextField()
+    discovered_on = models.DateTimeField(
+        auto_now_add=True, help_text="Date on which this torrent was discovered"
+    )
+    occurences = models.PositiveIntegerField(
+        default=1,
+        help_text="Count of occurences of this particular torrent",
+    )
+    keywords = models.TextField(
+        help_text="Keywords extracted from torrent name to help with search"
+    )
 
     search_vector = SearchVectorField(null=True)
 

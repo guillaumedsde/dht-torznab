@@ -25,19 +25,22 @@ def create_torrent_files(
 
 def create_torrent(job: greenstalk.Job):
     torrent_dict = json.loads(job.body)
-    torrent = models.Torrent(
+
+    torrent, created = models.Torrent.objects.get_or_create(
         info_hash=torrent_dict["infoHash"],
         name=torrent_dict["name"],
         keywords=" ".join(re.findall(SPLIT_TOKENS_REGEX, torrent_dict["name"])),
     )
 
-    torrent.save()
+    if created:
+        models.File.objects.bulk_create(
+            list(create_torrent_files(torrent_dict["files"], torrent))
+        )
 
-    models.File.objects.bulk_create(
-        list(create_torrent_files(torrent_dict["files"], torrent))
-    )
-
-    models.Torrent.objects.update(search_vector=SearchVector("keywords"))
+        models.Torrent.objects.update(search_vector=SearchVector("keywords"))
+    else:
+        torrent.occurences += 1
+        torrent.save()
 
     return torrent
 
