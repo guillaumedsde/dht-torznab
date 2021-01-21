@@ -2,14 +2,9 @@ version: "2.4"
 
 services:
   magneticod:
-    image: magneticod-distroless:v0.12.0
+    image: guillaumedsde/magneticod-distroless:latest
     depends_on:
       - beanstalkd
-    build:
-      dockerfile: docker/magneticod.Dockerfile
-      context: .
-      args:
-        MAGNETICOD_VERSION: master
     command: 
       - --database=beanstalkd://beanstalkd:11300/magneticod_tube
       - --verbose
@@ -17,12 +12,7 @@ services:
       - --indexer-interval=1
       - --indexer-max-neighbors=5000
   beanstalkd:
-    image: beanstalkd-distroless:latest
-    build:
-      dockerfile: docker/beanstalkd.Dockerfile
-      context: .
-      args:
-        BEANSTALKD_VERSION: "1.12"
+    image: guillaumedsde/beanstalkd-distroless:v1.12
     command:
       - -z 1048560
       - -f 2400000
