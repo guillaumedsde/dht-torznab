@@ -52,7 +52,7 @@ class Torrent(BaseModel):
     def rfc_2822_discovered_on(self):
         return utils.format_datetime(self.discovered_on)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return self.name
 
     class Meta:
@@ -70,7 +70,7 @@ class File(BaseModel):
     size = models.BigIntegerField()
     torrent = models.ForeignKey(Torrent, on_delete=models.CASCADE, related_name="files")
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return self.path
 
     class Meta:
