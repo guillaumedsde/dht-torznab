@@ -19,6 +19,11 @@ mypy = "*"
 pylint = "*"
 pytype = "*"
 django-stubs = "*"
+pytest-django = "*"
+faker = "*"
+factory-boy = "*"
+pytest-cov = "*"
+django-coverage-plugin = "*"
 
 [requires]
 python_version = "3.8"
