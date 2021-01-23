@@ -86,7 +86,7 @@ WSGI_APPLICATION = "torznab.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {"default": env.dj_db_url("DATABASE_URL", default="postgres://localhost/")}
+DATABASES = {"default": env.dj_db_url("DATABASE_URL", default="sqlite://dq.sqlite")}
 
 
 # Password validation

@@ -37,5 +37,9 @@ pytype:
 .PHONY: checks
 checks: isort-check flake8 black-check bandit mypy pytype safety
 
+.PHONY: tests
+tests: 
+	py.test --cov api --cov-report=xml --cov-report=term
+
 .PHONY: format
 format: isort black
