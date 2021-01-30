@@ -23,8 +23,8 @@ def test_torrent_magneturl():
     )
 
     assert (
-        "magnet:?xt=urn:btih:944cc141baf25155bfb110273140f1e0e6687f4b&dn=archlinux-2021.01.01-x86_64.iso"
-        == torrent.magneturl
+        "magnet:?xt=urn:btih:944cc141baf25155bfb110273140f1e0e6687f4b&dn"
+        "=archlinux-2021.01.01-x86_64.iso" == torrent.magneturl
     )
 
 
