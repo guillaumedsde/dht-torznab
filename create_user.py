@@ -9,7 +9,10 @@ from rest_framework.authtoken.models import Token  # noqa: E402
 
 if __name__ == "__main__":
 
-    user = User.objects.create_user("user1", None, "password")
-    user.save()
-    token = Token.objects.create(user=user)
-    print(token.key)
+    user, created = User.objects.get_or_create(username="torznab")
+    if created:
+        user.save()
+        user.set_unusable_password()
+
+    token, created = Token.objects.get_or_create(user=user)
+    print(f"API Key: {token.key}")
