@@ -1,3 +1,4 @@
+import xml.etree.ElementTree as ET
 from typing import Optional, Tuple
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
@@ -5,7 +6,7 @@ from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
-from api import models
+from api import models, torznab
 
 
 def search_torrents(query: Optional[str]):
@@ -13,8 +14,6 @@ def search_torrents(query: Optional[str]):
         search_vector = SearchVector("keywords")
         search_query = SearchQuery(query, search_type="phrase")
         search_rank = SearchRank(search_vector, search_query)
-
-        print(search_query)
 
         torrents = (
             models.Torrent.objects.prefetch_related("files")
@@ -46,19 +45,21 @@ def search(request: HttpRequest):
     paginator = Paginator(torrents, limit)
 
     torrent_page = paginator.get_page(offset)
-    print(paginator)
-    print(torrent_page.object_list)
-    return render(
-        request,
-        "feed.xml",
-        {
-            "torrent_page": torrent_page,
-            "offset": torrent_page.number - 1,
-            "category": "search",
-            "url": request.get_full_path(),
-        },
+
+    xml_root_node = torznab.xml_root()
+    xml_channel_node = torznab.xml_channel(
+        root=xml_root_node,
+        feed_url=request.get_full_path(),
+        page=torrent_page,
+        function="search",
+    )
+    torznab.xml_torrents(channel=xml_channel_node, page=torrent_page)
+
+    return HttpResponse(
+        content=ET.tostring(
+            xml_root_node, encoding="utf-8", method="xml", xml_declaration=True
+        ),
         content_type="text/xml",
-        status=200,
     )
 
 
