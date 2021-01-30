@@ -2,8 +2,9 @@ from email import utils
 
 import pytest
 from faker import Factory
+from lxml import etree as ET
 
-from api import factories
+from api import factories, torznab
 
 faker = Factory.create()
 
@@ -31,7 +32,7 @@ def test_torrent_magneturl():
 @pytest.mark.django_db
 def test_torrent_nbr_files():
     torrent = factories.TorrentFactory()
-    files = factories.FileFactory.create_batch(faker.pyint(), torrent=torrent)
+    files = factories.FileFactory.create_batch(faker.random_int(), torrent=torrent)
     assert len(files) == torrent.nbr_files
 
 
@@ -42,3 +43,7 @@ def test_torrent_rfc_2822_discovered_on():
     torrent.discovered_on = dt
 
     assert utils.format_datetime(dt) == torrent.rfc_2822_discovered_on
+
+
+def test_xml_root():
+    assert ET.tostring(torznab.xml_root()) == b'<rss version="1.0" encoding="utf-8"/>'
