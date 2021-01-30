@@ -27,6 +27,8 @@ factory-boy = "*"
 pytest-cov = "*"
 django-coverage-plugin = "*"
 django-cprofile-middleware = "*"
+djangorestframework-stubs = "*"
+lxml-stubs = "*"
 
 [requires]
 python_version = "3.8"
