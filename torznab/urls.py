@@ -19,11 +19,7 @@ from django.urls import path
 
 from api import views
 
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
-urlpatterns = [
-    path("api", views.index),
-]
+urlpatterns = [path("api", views.TorznabView.as_view(), name="torznab")]
 
 if settings.ADMIN_ENABLED:
     urlpatterns.append(path("admin/", admin.site.urls))

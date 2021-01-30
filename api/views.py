@@ -2,10 +2,14 @@ from typing import Optional, Tuple
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.paginator import Paginator
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from lxml import etree as ET
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 from api import models, torznab
+from api.auth import TokenAuthSupportQueryString
+from api.negotiation import IgnoreClientContentNegotiation
 
 
 def search_torrents(query: Optional[str]):
@@ -66,13 +70,17 @@ def caps():
     return HttpResponse(open("api/static/caps.xml").read(), content_type="text/xml")
 
 
-def index(request: HttpRequest, *args, **kwargs):
-    if function := request.GET.get("t", None):
-        if function == "caps":
-            return caps()
-        elif function == "search":
-            return search(request)
-        if function == "movie":
-            return search(request)
+class TorznabView(APIView):
+    authentication_classes = [TokenAuthSupportQueryString]
+    permission_classes = [IsAuthenticated]
+    content_negotiation_class = IgnoreClientContentNegotiation
 
-    return HttpResponse("test")
+    def get(self, request, format=None):
+        if function := request.GET.get("t", None):
+            if function == "caps":
+                return caps()
+            elif function == "search":
+                return search(request)
+            if function == "movie":
+                return search(request)
+        return HttpResponseBadRequest()

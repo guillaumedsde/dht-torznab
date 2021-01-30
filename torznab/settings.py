@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    "rest_framework",
+    "rest_framework.authtoken",
 ]
 
 if ADMIN_ENABLED is True:
@@ -136,3 +138,13 @@ STATIC_URL = "/static/"
 
 if DEBUG:
     DJANGO_CPROFILE_MIDDLEWARE_REQUIRE_STAFF = False
+
+# django-rest-framework
+# https://www.django-rest-framework.org/
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "api.auth.TokenAuthSupportQueryString",
+    ],
+    "DEFAULT_CONTENT_NEGOTIATION_CLASS": "api.negotiation.IgnoreClientContentNegotiation",
+}
