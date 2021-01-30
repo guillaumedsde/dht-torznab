@@ -13,7 +13,10 @@ include:
     PIPENV_VENV_IN_PROJECT: enabled
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   before_script:
-    - pip install pipenv==2020.11.15
+    - if ! command -v pipenv &> /dev/null
+      then
+          pip install pipenv==2020.11.15
+      fi
     - pipenv install --dev --deploy
     - export PATH="$CI_PROJECT_DIR/.venv/bin:$PATH"
   cache:
@@ -23,6 +26,7 @@ include:
       - .cache/pip
       - .pytype
       - .mypy_cache
+      - .pytest_cache
 
 cache-dependencies:
   extends: .python
@@ -74,6 +78,10 @@ tests:
   artifacts:
     reports:
       cobertura: coverage.xml
+
+code_quality:
+  artifacts:
+    paths: [gl-code-quality-report.json]
 
 
 .build-docker:
