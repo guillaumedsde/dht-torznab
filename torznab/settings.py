@@ -146,5 +146,6 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "api.auth.TokenAuthSupportQueryString",
     ],
-    "DEFAULT_CONTENT_NEGOTIATION_CLASS": "api.negotiation.IgnoreClientContentNegotiation",
+    "DEFAULT_CONTENT_NEGOTIATION_CLASS": "api.negotiation."
+    "IgnoreClientContentNegotiation",
 }
