@@ -8,7 +8,7 @@ include:
 
 .python:
   image: python:3.8-buster
-  stage: analyse
+  stage: test
   variables:
     PIPENV_VENV_IN_PROJECT: enabled
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
