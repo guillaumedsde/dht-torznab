@@ -24,6 +24,7 @@ faker = "*"
 factory-boy = "*"
 pytest-cov = "*"
 django-coverage-plugin = "*"
+django-cprofile-middleware = "*"
 
 [requires]
 python_version = "3.8"

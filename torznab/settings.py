@@ -62,6 +62,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+if DEBUG:
+    MIDDLEWARE.append("django_cprofile_middleware.middleware.ProfilerMiddleware")
+
 ROOT_URLCONF = "torznab.urls"
 
 TEMPLATES = [
@@ -127,3 +130,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
+
+# django-cprofile-middleware
+# https://pypi.org/project/django-cprofile-middleware/
+
+if DEBUG:
+    DJANGO_CPROFILE_MIDDLEWARE_REQUIRE_STAFF = False
