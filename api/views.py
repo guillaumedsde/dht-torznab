@@ -63,20 +63,14 @@ def search(request: HttpRequest):
     )
 
 
-def caps(request: HttpRequest):
-    return render(
-        request,
-        "caps.xml",
-        {},
-        content_type="text/xml",
-        status=200,
-    )
+def caps():
+    return HttpResponse(open("api/static/caps.xml").read(), content_type="text/xml")
 
 
 def index(request: HttpRequest, *args, **kwargs):
     if function := request.GET.get("t", None):
         if function == "caps":
-            return caps(request)
+            return caps()
         elif function == "search":
             return search(request)
         if function == "movie":
