@@ -1,8 +1,10 @@
-
 stages:
   - cache dependencies
-  - analyse
+  - test
   - build
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
 
 .python:
   image: python:3.8-buster
@@ -63,6 +65,16 @@ mypy:
 #   extends: .python
 #   script: 
 #     - make pytype
+
+tests: 
+  extends: .python
+  script: 
+    - make tests
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+  artifacts:
+    reports:
+      cobertura: coverage.xml
+
 
 .build-docker:
   # Official docker image.
