@@ -3,7 +3,6 @@ from typing import Optional, Tuple
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
 from lxml import etree as ET
 
 from api import models, torznab
