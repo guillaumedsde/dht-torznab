@@ -1,6 +1,5 @@
-import xml.etree.ElementTree as ET
-
 from django.core.paginator import Page
+from lxml import etree as ET
 
 NS = {
     "atom": "http://www.w3.org/2005/Atom",

@@ -9,6 +9,7 @@ greenstalk = "*"
 environs = { extras = ["django"], version = "*" }
 psycopg2-binary = "*"
 uvicorn = "*"
+lxml = "*"
 
 [dev-packages]
 flake8 = "*"
