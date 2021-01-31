@@ -24,7 +24,7 @@ black-check:
 
 .PHONY: bandit
 bandit:
-	bandit -r *.py api/*.py torznab/*.py
+	bandit -r *.py api/*.py torznab/*.py -c .bandit.yml
 
 .PHONY: mypy
 mypy:
