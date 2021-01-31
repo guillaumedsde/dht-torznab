@@ -61,11 +61,10 @@ mypy:
   script: 
     - make mypy
 
-# need to fix this
-# pytype: 
-#   extends: .python
-#   script: 
-#     - make pytype
+pytype: 
+  extends: .python
+  script: 
+    - make pytype
 
 tests: 
   extends: .python
