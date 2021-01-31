@@ -1,7 +1,7 @@
 from email import utils
 
 import pytest
-from faker import Factory
+from faker import Factory  # type: ignore
 
 # safe to use lxml instead of defusedxml since we are
 # generating XML, not parsing it

@@ -76,7 +76,7 @@ def caps():
 class TorznabView(APIView):
     authentication_classes = [TokenAuthSupportQueryString]
     permission_classes = [IsAuthenticated]
-    content_negotiation_class = IgnoreClientContentNegotiation
+    content_negotiation_class = IgnoreClientContentNegotiation  # type: ignore
 
     def get(self, request, format=None):
         if function := request.GET.get("t", None):

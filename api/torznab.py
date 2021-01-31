@@ -10,7 +10,7 @@ NS = {
 }
 
 
-def xml_root() -> ET.Element:
+def xml_root() -> ET._Element:
     ET.register_namespace("atom", NS["atom"])
     ET.register_namespace("torznab", NS["torznab"])
     root = ET.Element("rss", attrib={"version": "1.0", "encoding": "utf-8"})
@@ -18,14 +18,14 @@ def xml_root() -> ET.Element:
 
 
 def xml_channel(
-    root: ET.Element, feed_url: str, function: str, page: Page
-) -> ET.Element:
+    root: ET._Element, feed_url: str, function: str, page: Page
+) -> ET._Element:
     channel = ET.SubElement(root, "channel")
 
     # Link
     ET.SubElement(
         channel,
-        ET.QName(NS["atom"], "link"),
+        ET.QName(NS["atom"], "link"),  # type: ignore
         attrib={"href": feed_url, "rel": "self", "type": "application/rss+xml"},
     )
 
@@ -41,14 +41,14 @@ def xml_channel(
     # Pagination info
     ET.SubElement(
         channel,
-        ET.QName(NS["torznab"], "response"),
+        ET.QName(NS["torznab"], "response"),  # type: ignore
         attrib={"offset": str(page.number), "total": str(page.paginator.count)},
     ).text = function
 
     return channel
 
 
-def xml_torrents(channel: ET.Element, page: Page):
+def xml_torrents(channel: ET._Element, page: Page):
     for torrent in page.object_list:
         item = ET.SubElement(channel, "item")
 
@@ -69,7 +69,7 @@ def xml_torrents(channel: ET.Element, page: Page):
         )
         ET.SubElement(
             item,
-            ET.QName(NS["torznab"], "attr"),
+            ET.QName(NS["torznab"], "attr"),  # type: ignore
             attrib={
                 "name": "size",
                 "value": str(torrent.size),
@@ -77,7 +77,7 @@ def xml_torrents(channel: ET.Element, page: Page):
         )
         ET.SubElement(
             item,
-            ET.QName(NS["torznab"], "attr"),
+            ET.QName(NS["torznab"], "attr"),  # type: ignore
             attrib={
                 "name": "infohash",
                 "value": torrent.info_hash,
@@ -85,7 +85,7 @@ def xml_torrents(channel: ET.Element, page: Page):
         )
         ET.SubElement(
             item,
-            ET.QName(NS["torznab"], "attr"),
+            ET.QName(NS["torznab"], "attr"),  # type: ignore
             attrib={
                 "name": "files",
                 "value": str(torrent.nbr_files),
@@ -93,7 +93,7 @@ def xml_torrents(channel: ET.Element, page: Page):
         )
         ET.SubElement(
             item,
-            ET.QName(NS["torznab"], "attr"),
+            ET.QName(NS["torznab"], "attr"),  # type: ignore
             attrib={
                 "name": "magneturl",
                 "value": torrent.magneturl,

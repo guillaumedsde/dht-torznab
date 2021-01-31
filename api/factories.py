@@ -1,5 +1,5 @@
-import factory
-from faker import Factory
+import factory  # type: ignore
+from faker import Factory  # type: ignore
 
 from api import models
 
