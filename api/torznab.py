@@ -53,7 +53,9 @@ def xml_torrents(channel: ET._Element, page: Page):
         item = ET.SubElement(channel, "item")
 
         ET.SubElement(item, "title").text = torrent.name
-        ET.SubElement(item, "guid").text = str(torrent.id)
+        ET.SubElement(item, "guid", attrib={"isPermaLink": "false"}).text = str(
+            torrent.id
+        )
         ET.SubElement(item, "link").text = torrent.magneturl
         ET.SubElement(item, "pubDate").text = torrent.rfc_2822_discovered_on
         ET.SubElement(item, "size").text = str(torrent.size)
@@ -64,7 +66,7 @@ def xml_torrents(channel: ET._Element, page: Page):
             attrib={
                 "url": torrent.magneturl,
                 "length": str(torrent.size),
-                "type": "application/x-bittorrent;x-scheme-handler/magnet",
+                "type": "application/x-bittorrent",
             },
         )
         ET.SubElement(
