@@ -1,5 +1,8 @@
 from django.core.paginator import Page
-from lxml import etree as ET
+
+# safe to use lxml instead of defusedxml since we are
+# generating XML, not parsing it
+from lxml import etree as ET  # nosec
 
 NS = {
     "atom": "http://www.w3.org/2005/Atom",

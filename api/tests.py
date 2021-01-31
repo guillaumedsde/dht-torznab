@@ -2,7 +2,10 @@ from email import utils
 
 import pytest
 from faker import Factory
-from lxml import etree as ET
+
+# safe to use lxml instead of defusedxml since we are
+# generating XML, not parsing it
+from lxml import etree as ET  # nosec
 
 from api import factories, torznab
 
