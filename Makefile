@@ -32,7 +32,7 @@ mypy:
 
 .PHONY: pytype
 pytype:
-	pytype .
+	pytype . --config setup.cfg
 
 .PHONY: checks
 checks: isort-check flake8 black-check bandit mypy pytype safety
