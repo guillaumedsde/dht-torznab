@@ -15,11 +15,14 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path, re_path
 
 from api import views
 
 urlpatterns = [path("api", views.TorznabView.as_view(), name="torznab")]
 
-if settings.ADMIN_ENABLED:
-    urlpatterns.append(path("admin/", admin.site.urls))
+if settings.DEBUG:
+    urlpatterns += [
+        path("admin/", admin.site.urls),
+        re_path(r"^silk/", include("silk.urls", namespace="silk")),
+    ]

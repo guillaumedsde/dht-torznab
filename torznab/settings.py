@@ -50,8 +50,8 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
 ]
 
-if ADMIN_ENABLED is True:
-    INSTALLED_APPS.append("django.contrib.admin")
+if DEBUG is True:
+    INSTALLED_APPS.extend(["django.contrib.admin", "silk"])
 
 
 MIDDLEWARE = [
@@ -65,7 +65,11 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    MIDDLEWARE.append("django_cprofile_middleware.middleware.ProfilerMiddleware")
+    MIDDLEWARE.extend(
+        [
+            "silk.middleware.SilkyMiddleware",
+        ]
+    )
 
 ROOT_URLCONF = "torznab.urls"
 
@@ -133,11 +137,11 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-# django-cprofile-middleware
-# https://pypi.org/project/django-cprofile-middleware/
+# django-silk
+# https://github.com/jazzband/django-silk
 
 if DEBUG:
-    DJANGO_CPROFILE_MIDDLEWARE_REQUIRE_STAFF = False
+    SILKY_PYTHON_PROFILER = True
 
 # django-rest-framework
 # https://www.django-rest-framework.org/

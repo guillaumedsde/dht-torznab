@@ -26,9 +26,9 @@ faker = "*"
 factory-boy = "*"
 pytest-cov = "*"
 django-coverage-plugin = "*"
-django-cprofile-middleware = "*"
 djangorestframework-stubs = "*"
 lxml-stubs = "*"
+django-silk = "*"
 
 [requires]
 python_version = "3.8"
