@@ -51,7 +51,7 @@ if __name__ == "__main__":
     env.read_env()  # read .env file, if it exists
 
     beanstalkd_host = env.str("BEANSTALKD_HOST", "localhost")
-    beanstalkd_port = env.int("BEANSTALKD_PORT", 11300)
+    beanstalkd_port = env.int("BEANSTALKD_PORT", 11300) # noqa: WPS432
     beanstalkd_tube = env.str("BEANSTALKD_TUBE", "magneticod_tube")
     listener_threads = env.int("LISTENER_THREADS", 4)
 

@@ -5,7 +5,7 @@ from faker import Factory  # type: ignore
 
 # safe to use lxml instead of defusedxml since we are
 # generating XML, not parsing it
-from lxml import etree as ET  # nosec
+from lxml import etree as ET  # noqa: S410
 
 from api import factories, torznab
 

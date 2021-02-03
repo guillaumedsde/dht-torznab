@@ -1,4 +1,4 @@
-import urllib.parse
+from urllib import parse
 import uuid
 from email import utils
 
@@ -8,17 +8,21 @@ from django.db import models
 
 
 class BaseModel(models.Model):
+    """Base abstract model used as base for all models."""
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    class Meta:
+    class Meta:  # noqa: WPS306, D106
         abstract = True
 
 
 class Torrent(BaseModel):
+    """Django ORM model for Torrent."""
+
     name = models.TextField()
     info_hash = models.CharField(
         # SHA1 size
-        max_length=40
+        max_length=40  # noqa: WPS432
     )
     discovered_on = models.DateTimeField(
         auto_now_add=True, help_text="Date on which this torrent was discovered"
@@ -35,12 +39,12 @@ class Torrent(BaseModel):
 
     @property
     def size(self):
-        return sum(file.size for file in self.files.all())
+        return sum(torrent_file.size for torrent_file in self.files.all())
 
     @property
     def magneturl(self):
 
-        url_encoded_name = urllib.parse.quote(self.name)
+        url_encoded_name = parse.quote(self.name)
 
         return f"magnet:?xt=urn:btih:{self.info_hash}&dn={url_encoded_name}"
 
@@ -55,7 +59,7 @@ class Torrent(BaseModel):
     def __str__(self):  # pragma: no cover
         return self.name
 
-    class Meta:
+    class Meta:  # noqa: WPS306, D106
         ordering = ["-discovered_on"]
         constraints = [
             models.UniqueConstraint(
@@ -66,6 +70,8 @@ class Torrent(BaseModel):
 
 
 class File(BaseModel):
+    """Django ORM model for a Torrent file object."""
+
     path = models.TextField()
     size = models.BigIntegerField()
     torrent = models.ForeignKey(Torrent, on_delete=models.CASCADE, related_name="files")
@@ -73,5 +79,5 @@ class File(BaseModel):
     def __str__(self):  # pragma: no cover
         return self.path
 
-    class Meta:
+    class Meta:  # noqa: WPS306, D106
         ordering = ["-path"]

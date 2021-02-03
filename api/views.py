@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 
 # safe to use lxml instead of defusedxml since we are
 # generating XML, not parsing it
-from lxml import etree as ET  # nosec
+from lxml import etree as ET  # noqa: S410
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
@@ -63,14 +63,18 @@ def search(request: HttpRequest):
 
     return HttpResponse(
         content=ET.tostring(
-            xml_root_node, encoding="utf-8", method="xml", xml_declaration=True
+            xml_root_node,
+            encoding="utf-8",
+            method="xml",
+            xml_declaration=True,
         ),
         content_type="text/xml",
     )
 
 
 def caps():
-    return HttpResponse(open("api/static/caps.xml").read(), content_type="text/xml")
+    with open("api/static/caps.xml") as caps_xml:
+        return HttpResponse(caps_xml.read(), content_type="text/xml")
 
 
 class TorznabView(APIView):
