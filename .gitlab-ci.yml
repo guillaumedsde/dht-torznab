@@ -41,16 +41,6 @@ flake8:
   script: 
     - make flake8
 
-bandit: 
-  extends: .python
-  script: 
-    - make bandit
-
-isort: 
-  extends: .python
-  script: 
-    - make isort-check
-
 safety: 
   extends: .python
   script: 
