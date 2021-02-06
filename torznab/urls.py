@@ -16,10 +16,19 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
+from rest_framework import routers
 
-from api import views
+from api.views import torrents, torznab
 
-urlpatterns = [path("api", views.TorznabView.as_view(), name="torznab")]
+router = routers.DefaultRouter()
+
+router.register(r"torrents", torrents.TorrentViewSet)
+
+urlpatterns = [
+    path("", include(router.urls)),
+    path("api", torznab.TorznabView.as_view(), name="torznab"),
+]
+
 
 if settings.DEBUG:
     urlpatterns += [
