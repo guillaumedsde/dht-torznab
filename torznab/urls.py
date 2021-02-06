@@ -22,7 +22,7 @@ from api.views import torrents, torznab
 
 router = routers.DefaultRouter()
 
-router.register(r"torrents", torrents.TorrentViewSet)
+router.register(r"api/torrents", torrents.TorrentViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
