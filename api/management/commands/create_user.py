@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from rest_framework.authtoken.models import Token
 
 
-class CreateUserCommand(BaseCommand):
+class Command(BaseCommand):
     """
     Django command to create an user with accompanying API key
     """
