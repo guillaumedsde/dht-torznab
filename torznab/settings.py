@@ -35,6 +35,7 @@ ADMIN_ENABLED = env.bool("ADMIN_ENABLED", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", ["localhost"])
 
+PAGE_SIZE = env.int("PAGE_SIZE", default=25)
 
 # Application definition
 
@@ -152,4 +153,6 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_CONTENT_NEGOTIATION_CLASS": "api.negotiation."
     "IgnoreClientContentNegotiation",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": PAGE_SIZE,
 }

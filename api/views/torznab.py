@@ -1,5 +1,6 @@
 from typing import Optional, Tuple
 
+from django.conf import settings
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
@@ -34,11 +35,11 @@ def search_torrents(query: Optional[str]):
 def get_search_parameters(request: HttpRequest) -> Tuple[Optional[str], int, int]:
     query = request.GET.get("q", None)
     offset = int(request.GET.get("offset", "0")) + 1
-    limit = int(request.GET.get("limit", "25"))
+    limit = int(request.GET.get("limit", settings.PAGE_SIZE))
 
     # Cap limit per page
-    if limit > 50:
-        limit = 50
+    if limit > settings.PAGE_SIZE:
+        limit = settings.PAGE_SIZE
 
     return query, offset, limit
 

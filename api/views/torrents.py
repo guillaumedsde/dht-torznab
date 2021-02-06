@@ -1,8 +1,8 @@
 from rest_framework import filters, viewsets
-from api.auth import TokenAuthSupportQueryString
 from rest_framework.permissions import IsAuthenticated
 
 from api import models, serializers
+from api.auth import TokenAuthSupportQueryString
 
 
 class TorrentViewSet(viewsets.ReadOnlyModelViewSet):
