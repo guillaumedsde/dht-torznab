@@ -2,7 +2,7 @@ from django.core.paginator import Page
 
 # safe to use lxml instead of defusedxml since we are
 # generating XML, not parsing it
-from lxml import etree as ET  # noqa: S410
+from lxml import etree as ET  # nosec
 
 NS = {
     "atom": "http://www.w3.org/2005/Atom",

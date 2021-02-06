@@ -1,6 +1,6 @@
-from urllib import parse
 import uuid
 from email import utils
+from urllib import parse
 
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField

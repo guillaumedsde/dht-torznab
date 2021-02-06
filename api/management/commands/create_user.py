@@ -1,7 +1,8 @@
+from argparse import ArgumentParser
+
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from rest_framework.authtoken.models import Token
-from argparse import ArgumentParser
 
 
 class CreateUserCommand(BaseCommand):
