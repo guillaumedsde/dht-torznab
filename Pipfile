@@ -29,7 +29,6 @@ django-coverage-plugin = "*"
 djangorestframework-stubs = "*"
 lxml-stubs = "*"
 django-silk = "*"
-wemake-python-styleguide = "*"
 
 [requires]
 python_version = "3.8"
