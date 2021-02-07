@@ -7,10 +7,10 @@ from rest_framework.authtoken.models import Token
 
 class Command(BaseCommand):
     """
-    Django command to create an user with accompanying API key
+    Creates a user with an API key if necessary and display it
     """
 
-    help = "Creates a user with an API key if necessary and display it"
+    help = __doc__
 
     def add_arguments(self, parser: ArgumentParser):
         """Add command arguments.
