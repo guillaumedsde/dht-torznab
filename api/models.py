@@ -1,3 +1,4 @@
+import binascii
 import uuid
 from email import utils
 from urllib import parse
@@ -20,9 +21,9 @@ class Torrent(BaseModel):
     """Django ORM model for Torrent."""
 
     name = models.TextField()
-    info_hash = models.CharField(
+    info_hash = models.BinaryField(
         # SHA1 size
-        max_length=40  # noqa: WPS432
+        max_length=160  # noqa: WPS432
     )
     discovered_on = models.DateTimeField(
         auto_now_add=True, help_text="Date on which this torrent was discovered"
@@ -38,22 +39,26 @@ class Torrent(BaseModel):
     search_vector = SearchVectorField(null=True)
 
     @property
-    def size(self):
+    def size(self) -> int:
         return sum(torrent_file.size for torrent_file in self.files.all())
 
     @property
-    def magneturl(self):
+    def str_info_hash(self) -> str:
+        return binascii.b2a_hex(self.info_hash).decode("utf-8")
+
+    @property
+    def magneturl(self) -> str:
 
         url_encoded_name = parse.quote(self.name)
 
-        return f"magnet:?xt=urn:btih:{self.info_hash}&dn={url_encoded_name}"
+        return f"magnet:?xt=urn:btih:{self.str_info_hash}&dn={url_encoded_name}"
 
     @property
-    def nbr_files(self):
+    def nbr_files(self) -> int:
         return len(self.files.all())
 
     @property
-    def rfc_2822_discovered_on(self):
+    def rfc_2822_discovered_on(self) -> str:
         return utils.format_datetime(self.discovered_on)
 
     def __str__(self):  # pragma: no cover

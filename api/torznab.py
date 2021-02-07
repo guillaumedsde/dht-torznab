@@ -82,7 +82,7 @@ def xml_torrents(channel: ET._Element, page: Page):
             ET.QName(NS["torznab"], "attr"),  # type: ignore
             attrib={
                 "name": "infohash",
-                "value": torrent.info_hash,
+                "value": torrent.str_info_hash,
             },
         )
         ET.SubElement(

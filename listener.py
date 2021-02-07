@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import binascii
 import json
 import re
 from multiprocessing.pool import ThreadPool
@@ -27,7 +28,7 @@ def create_torrent(job: greenstalk.Job):
     torrent_dict = json.loads(job.body)
 
     torrent, created = models.Torrent.objects.get_or_create(
-        info_hash=torrent_dict["infoHash"],
+        info_hash=binascii.unhexlify(torrent_dict["infoHash"]),
         name=torrent_dict["name"],
         keywords=" ".join(re.findall(SPLIT_TOKENS_REGEX, torrent_dict["name"])),
     )
