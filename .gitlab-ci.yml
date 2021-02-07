@@ -51,10 +51,10 @@ mypy:
   script: 
     - make mypy
 
-pytype: 
-  extends: .python
-  script: 
-    - make pytype
+# pytype: 
+#   extends: .python
+#   script: 
+#     - make pytype
 
 tests: 
   extends: .python
