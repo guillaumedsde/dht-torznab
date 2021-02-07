@@ -11,6 +11,7 @@ psycopg2-binary = "*"
 uvicorn = "*"
 lxml = "*"
 djangorestframework = "*"
+tqdm = "*"
 
 [dev-packages]
 flake8 = "*"
