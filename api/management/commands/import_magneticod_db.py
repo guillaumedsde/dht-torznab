@@ -6,22 +6,32 @@ from django.contrib.postgres.search import SearchVector
 from django.core.management.base import BaseCommand
 from tqdm import tqdm  # type: ignore
 
-from api import models
+from api import models 
 
 
-def bulk_create(model, obj_list, ignore_conflicts=True):
+def bulk_create(model, obj_list, ignore_conflicts: bool = True) -> int:
+    """Bulk insert many django models into database.
+
+    Optionally account for conflicts during inserts
+
+    Args:
+        model ([type]): The django model class.
+        obj_list ([type]): List of django model instances to insert.
+        ignore_conflicts (bool, optional): Whether to ignore conflicts. Defaults to True.
+
+    Returns:
+        int: the number of objects passed as argument
+    """
     model.objects.bulk_create(obj_list, ignore_conflicts=ignore_conflicts)
     return len(obj_list)
 
 
 class Command(BaseCommand):
-    """
-    Import a magneticod sqlite3 database into dht-torznab database
-    """
+    """Import a magneticod sqlite3 database into dht-torznab database."""
 
-    help = __doc__
+    help = __doc__  # noqa: VNE003
 
-    def add_arguments(self, parser: ArgumentParser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         """Add command arguments.
 
         Args:
@@ -40,10 +50,9 @@ class Command(BaseCommand):
             help="Buffer size when inserting torrents into dht-torznab DB",
         )
 
-    def handle(self, *args, **options):
-        """
-        Creates a user with an API key if necessary and display it
-        """
+    # noqa: ANN002, AN003
+    def handle(self, *args, **options) -> None:
+        """Create a user with an API key if necessary and display it."""
         conn = sqlite3.connect(
             options["database"],
         )
@@ -74,14 +83,14 @@ class Command(BaseCommand):
             )
             torrent_objs.append(torrent_obj)
             file_cursor = conn.cursor()
-            for file in file_cursor.execute(
+            for torrent_file in file_cursor.execute(
                 "SELECT f.path, f.size FROM files AS f WHERE torrent_id=?",
                 [str(torrent["id"])],
             ):
                 file_objs.append(
                     models.File(
-                        path=file["path"].decode("utf-8", "replace"),
-                        size=file["size"],
+                        path=torrent_file["path"].decode("utf-8", "replace"),
+                        size=torrent_file["size"],
                         torrent=torrent_obj,
                     )
                 )

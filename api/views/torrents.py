@@ -6,6 +6,8 @@ from api.auth import TokenAuthSupportQueryString
 
 
 class TorrentViewSet(viewsets.ReadOnlyModelViewSet):
+    """Set of views for API torrents."""
+
     queryset = models.Torrent.objects.prefetch_related("files")
     serializer_class = serializers.TorrentSerializer
     filter_backends = [filters.SearchFilter]

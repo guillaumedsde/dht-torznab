@@ -7,7 +7,9 @@ fake = Factory.create()
 
 
 class TorrentFactory(factory.django.DjangoModelFactory):
-    class Meta:
+    """Create a fake Torrent object."""
+
+    class Meta:  # noqa: D106
         model = models.Torrent
 
     name = fake.file_name()
@@ -22,7 +24,9 @@ class TorrentFactory(factory.django.DjangoModelFactory):
 
 
 class FileFactory(factory.django.DjangoModelFactory):
-    class Meta:
+    """Create a fake File object with a fake Torrent."""
+
+    class Meta:  # noqa: D106
         model = models.File
 
     path = fake.file_path(fake.pyint(min_value=1, max_value=5))
