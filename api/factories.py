@@ -3,28 +3,28 @@ from faker import Factory  # type: ignore
 
 from api import models
 
-faker = Factory.create()
+fake = Factory.create()
 
 
 class TorrentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Torrent
 
-    name = faker.file_name()
+    name = fake.file_name()
 
-    info_hash = faker.md5()
+    info_hash = fake.binary(length=128)
 
-    discovered_on = faker.date_object()
+    discovered_on = fake.date_object()
 
-    occurences = faker.pyint()
+    occurences = fake.pyint()
 
-    keywords = [faker.word() for _ in range(faker.pyint(min_value=1, max_value=5))]
+    keywords = [fake.word() for _ in range(fake.pyint(min_value=1, max_value=5))]
 
 
 class FileFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.File
 
-    path = faker.file_path(faker.pyint(min_value=1, max_value=5))
-    size = faker.pyint()
+    path = fake.file_path(fake.pyint(min_value=1, max_value=5))
+    size = fake.pyint()
     torrent = factory.SubFactory(TorrentFactory)

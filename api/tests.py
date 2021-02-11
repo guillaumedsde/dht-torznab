@@ -1,3 +1,4 @@
+import binascii
 from email import utils
 
 import pytest
@@ -9,13 +10,13 @@ from lxml import etree as ET  # nosec
 
 from api import factories, torznab
 
-faker = Factory.create()
+fake = Factory.create()
 
 
 @pytest.mark.django_db
 def test_torrent_size():
     torrent = factories.TorrentFactory()
-    files = factories.FileFactory.create_batch(faker.pyint(), torrent=torrent)
+    files = factories.FileFactory.create_batch(fake.pyint(), torrent=torrent)
     assert sum(file.size for file in files) == torrent.size
 
 
@@ -23,7 +24,7 @@ def test_torrent_size():
 def test_torrent_magneturl():
     torrent = factories.TorrentFactory(
         name="archlinux-2021.01.01-x86_64.iso",
-        info_hash="944cc141baf25155bfb110273140f1e0e6687f4b",
+        info_hash=binascii.unhexlify("944cc141baf25155bfb110273140f1e0e6687f4b"),
     )
 
     assert (
@@ -35,7 +36,7 @@ def test_torrent_magneturl():
 @pytest.mark.django_db
 def test_torrent_nbr_files():
     torrent = factories.TorrentFactory()
-    files = factories.FileFactory.create_batch(faker.random_int(), torrent=torrent)
+    files = factories.FileFactory.create_batch(fake.random_int(), torrent=torrent)
     assert len(files) == torrent.nbr_files
 
 
