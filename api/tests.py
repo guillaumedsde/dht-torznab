@@ -42,7 +42,7 @@ def test_torrent_nbr_files():
 
 @pytest.mark.django_db
 def test_torrent_rfc_2822_discovered_on():
-    dt = faker.date_time()
+    dt = fake.date_time()
     torrent = factories.TorrentFactory()
     torrent.discovered_on = dt
 
