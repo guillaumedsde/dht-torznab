@@ -2,9 +2,9 @@ import sqlite3
 from argparse import ArgumentParser
 from datetime import datetime
 
+from django.contrib.postgres.search import SearchVector
 from django.core.management.base import BaseCommand
 from tqdm import tqdm  # type: ignore
-from django.contrib.postgres.search import SearchVector
 
 from api import models
 
