@@ -11,9 +11,9 @@ from django.db import models
 class BaseModel(models.Model):
     """Base abstract model used as base for all models."""
 
-    id = models.UUIDField(
+    id = models.UUIDField(  # noqa: VNE003
         primary_key=True, default=uuid.uuid4, editable=False
-    )  # noqa: D400
+    )
 
     class Meta:  # noqa: WPS306, D106
         abstract = True

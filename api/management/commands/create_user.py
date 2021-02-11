@@ -6,11 +6,9 @@ from rest_framework.authtoken.models import Token
 
 
 class Command(BaseCommand):
-    """
-    Create a user with an API key if necessary and display it
-    """
+    """Create a user with an API key if necessary and display it."""
 
-    help = __doc__
+    help = __doc__  # noqa: VNE003
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         """Add command arguments.
@@ -25,11 +23,8 @@ class Command(BaseCommand):
             help="username of the user to create",
         )
 
-    # noqa: ANN002, AN003
-    def handle(self, *args, **options) -> None:
-        """
-        Create a user with an API key if necessary and display it.
-        """
+    def handle(self, *args, **options) -> None:  # noqa: ANN002, ANN003
+        """Create a user with an API key if necessary and display it."""
         username = options["user"] or "torznab"
         user, created = User.objects.get_or_create(username=username)
         if created:

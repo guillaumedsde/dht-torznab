@@ -6,10 +6,10 @@ from django.contrib.postgres.search import SearchVector
 from django.core.management.base import BaseCommand
 from tqdm import tqdm  # type: ignore
 
-from api import models 
+from api import models
 
 
-def bulk_create(model, obj_list, ignore_conflicts: bool = True) -> int:
+def bulk_create(model, obj_list, ignore_conflicts: bool = True) -> int:  # noqa: ANN001
     """Bulk insert many django models into database.
 
     Optionally account for conflicts during inserts
@@ -17,7 +17,7 @@ def bulk_create(model, obj_list, ignore_conflicts: bool = True) -> int:
     Args:
         model ([type]): The django model class.
         obj_list ([type]): List of django model instances to insert.
-        ignore_conflicts (bool, optional): Whether to ignore conflicts. Defaults to True.
+        ignore_conflicts (bool, optional): Whether to ignore conflicts.
 
     Returns:
         int: the number of objects passed as argument
@@ -37,7 +37,6 @@ class Command(BaseCommand):
         Args:
             parser: argument parser
         """
-
         parser.add_argument(
             "database", type=str, help="Path to sqlite3 database to import"
         )
@@ -50,8 +49,7 @@ class Command(BaseCommand):
             help="Buffer size when inserting torrents into dht-torznab DB",
         )
 
-    # noqa: ANN002, AN003
-    def handle(self, *args, **options) -> None:
+    def handle(self, *args, **options) -> None:  # noqa: ANN002, ANN003
         """Create a user with an API key if necessary and display it."""
         conn = sqlite3.connect(
             options["database"],

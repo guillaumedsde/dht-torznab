@@ -20,11 +20,28 @@ from api import models  # noqa: E402
 def create_torrent_files(
     file_dicts: List[Dict[str, Union[str, int]]], torrent: models.Torrent
 ) -> Iterator[models.File]:
+    """Insert Files into DB from given dictionaries reprenting these files.
+
+    Args:
+        file_dicts (List[Dict[str, Union[str, int]]]): Dictionaries for Files.
+        torrent (models.Torrent): The torrent the files belong to.
+
+    Yields:
+        Iterator[models.File]: The created File Objects.
+    """
     for file_dict in file_dicts:
         yield models.File(**file_dict, torrent=torrent)
 
 
-def create_torrent(job: greenstalk.Job):
+def create_torrent(job: greenstalk.Job) -> models.Torrent:
+    """Insert torrent from given job into DB.
+
+    Args:
+        job (greenstalk.Job): Job containing torrent JSON info.
+
+    Returns:
+        models.Torrent: Created torrent.
+    """
     torrent_dict = json.loads(job.body)
 
     torrent, created = models.Torrent.objects.get_or_create(

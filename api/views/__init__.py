@@ -1,3 +1,1 @@
-"""
-Views for torznab API.
-"""
+"""Views for torznab API."""

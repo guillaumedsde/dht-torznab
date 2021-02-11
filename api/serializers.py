@@ -8,13 +8,13 @@ class TorrentSerializer(serializers.ModelSerializer):
 
     info_hash = serializers.SerializerMethodField("get_str_info_hash")
 
-    class Meta:
+    class Meta:  # noqa: D106
         model = models.Torrent
         fields = ["id", "name", "size", "files", "info_hash", "magneturl"]
         depth = 1
 
     def get_str_info_hash(self, obj: models.Torrent) -> str:
-        """Gets the Torrent infohash from the given model
+        """Get the Torrent infohash from the given model.
 
         Args:
             obj models.Torrent: the torrent object

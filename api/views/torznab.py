@@ -4,12 +4,11 @@ from django.conf import settings
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
-from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 
 # safe to use lxml instead of defusedxml since we are
 # generating XML, not parsing it
-from lxml import etree as ET  # nosec
+from lxml import etree as ET  # nosec # noqa: N812
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -25,8 +24,7 @@ def search_torrents(query: Optional[str]) -> QuerySet[models.Torrent]:
         search_query = SearchQuery(query, search_type="phrase")
         search_rank = SearchRank(search_vector, search_query)
 
-        torrents = (
-            # noqa: ANN001
+        torrents = (  # noqa: ECE001
             models.Torrent.objects.prefetch_related("files")
             .annotate(rank=search_rank)
             .order_by("-rank")

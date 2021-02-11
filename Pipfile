@@ -46,6 +46,7 @@ dlint = "*"
 flake8-pytest = "*"
 flake8-mock = "*"
 flake8-annotations = "*"
+pylint-django = "*"
 
 [requires]
 python_version = "3.8"
