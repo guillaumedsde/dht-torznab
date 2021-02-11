@@ -4,6 +4,7 @@ from datetime import datetime
 
 from django.core.management.base import BaseCommand
 from tqdm import tqdm  # type: ignore
+from django.contrib.postgres.search import SearchVector
 
 from api import models
 
@@ -88,6 +89,7 @@ class Command(BaseCommand):
             if i % options["buffer-size"] == 0:
                 bulk_create(models.Torrent, torrent_objs)
                 bulk_create(models.File, file_objs)
+                models.Torrent.objects.update(search_vector=SearchVector("keywords"))
                 torrent_objs = []
                 file_objs = []
 
