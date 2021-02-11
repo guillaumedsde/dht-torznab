@@ -15,6 +15,7 @@ include:
   before_script:
     - pip install pipenv==2020.11.15
     - pipenv install --dev --deploy
+    - pipenv clean
     - export PATH="$CI_PROJECT_DIR/.venv/bin:$PATH"
   cache:
     key: ${CI_COMMIT_REF_SLUG}
