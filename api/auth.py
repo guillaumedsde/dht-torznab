@@ -9,7 +9,14 @@ class TokenAuthSupportQueryString(TokenAuthentication):
     It works with the following parameter: "http://www.example.com/?apikey=<token_key>"
     """
 
-    def authenticate(self, request: Request):
+    def authenticate(self, request: Request):  # noqa: ANN201
+        """Authenticate user using API key.
+
+        Authenticate with query parameter `apikey` fallback to HTTP header otherwise.
+
+        Args:
+            request (Request): The DRF request.
+        """
         # Check if 'apikey' is in the request query params.
         # Give precedence to 'Authorization' header.
         if (

@@ -25,6 +25,17 @@ def xml_root() -> ET._Element:
 def xml_channel(
     root: ET._Element, feed_url: str, function: str, page: Page
 ) -> ET._Element:
+    """Create XML RSS channel with metadata but without elements.
+
+    Args:
+        root (ET._Element): Root XML element.
+        feed_url (str): URL for the current feed.
+        function (str): current torznab function called.
+        page (Page): Django torrent page.
+
+    Returns:
+        ET._Element: return the empty RSS channel.
+    """
     channel = ET.SubElement(root, "channel")
 
     # Link
@@ -54,6 +65,12 @@ def xml_channel(
 
 
 def xml_torrents(channel: ET._Element, page: Page) -> None:
+    """Add torrents from the given django page to given XML RSS channel.
+
+    Args:
+        channel (ET._Element): XML RSS channel.
+        page (Page): Django torrent page.
+    """
     for torrent in page.object_list:
         item = ET.SubElement(channel, "item")
 

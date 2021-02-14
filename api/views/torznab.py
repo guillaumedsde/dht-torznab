@@ -19,6 +19,14 @@ from api.negotiation import IgnoreClientContentNegotiation
 
 
 def search_torrents(query: Optional[str]) -> QuerySet[models.Torrent]:
+    """Search torrents optionally with given query.
+
+    Args:
+        query (Optional[str]): Torrent search query.
+
+    Returns:
+        QuerySet[models.Torrent]: Torrent queryset.
+    """
     if query:
         search_vector = SearchVector("keywords")
         search_query = SearchQuery(query, search_type="phrase")
