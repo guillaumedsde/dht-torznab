@@ -35,6 +35,7 @@ ADMIN_ENABLED = env.bool("ADMIN_ENABLED", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", ["localhost"])
 
+PAGE_SIZE = env.int("PAGE_SIZE", default=25)
 
 # Application definition
 
@@ -47,10 +48,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "rest_framework",
+    "rest_framework.authtoken",
 ]
 
-if ADMIN_ENABLED is True:
-    INSTALLED_APPS.append("django.contrib.admin")
+if DEBUG is True:
+    INSTALLED_APPS.extend(["django.contrib.admin", "silk"])
 
 
 MIDDLEWARE = [
@@ -62,6 +64,13 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE.extend(
+        [
+            "silk.middleware.SilkyMiddleware",
+        ]
+    )
 
 ROOT_URLCONF = "torznab.urls"
 
@@ -87,7 +96,7 @@ WSGI_APPLICATION = "torznab.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {"default": env.dj_db_url("DATABASE_URL", default="postgres://localhost/")}
+DATABASES = {"default": env.dj_db_url("DATABASE_URL", default="sqlite://dq.sqlite")}
 
 
 # Password validation
@@ -129,19 +138,21 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-# djangorestframework
-# https://www.django-rest-framework.org/#quickstart
+# django-silk
+# https://github.com/jazzband/django-silk
+
+if DEBUG:
+    SILKY_PYTHON_PROFILER = True
+
+# django-rest-framework
+# https://www.django-rest-framework.org/
+
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "api.auth.TokenAuthSupportQueryString",
     ],
-    # Pagination
+    "DEFAULT_CONTENT_NEGOTIATION_CLASS": "api.negotiation."
+    "IgnoreClientContentNegotiation",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 25,
-    # Renderer
-    "DEFAULT_RENDERER_CLASS": "rest_framework.renderers.BrowsableAPIRenderer"
-    if DEBUG
-    else "rest_framework.renderers.JSONRenderer",
+    "PAGE_SIZE": PAGE_SIZE,
 }

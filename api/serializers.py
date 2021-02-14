@@ -1,28 +1,25 @@
-import urllib.parse
-
 from rest_framework import serializers
 
 from api import models
 
 
 class TorrentSerializer(serializers.ModelSerializer):
+    """Seralizer for Torrent database model."""
 
-    # size of the release in bytes
-    size = serializers.SerializerMethodField("get_size")
+    info_hash = serializers.SerializerMethodField("get_str_info_hash")
 
-    # Magnet uri
-    magneturl = serializers.SerializerMethodField("get_magneturl")
-
-    def get_size(self, obj):
-        return sum(file.size for file in obj.files.all())
-
-    def get_magneturl(self, obj):
-
-        url_encoded_name = urllib.parse.quote(obj.name)
-
-        return f"magnet:?xt=urn:btih:{obj.info_hash}&dn={url_encoded_name}"
-
-    class Meta:
+    class Meta:  # noqa: D106
         model = models.Torrent
         fields = ["id", "name", "size", "files", "info_hash", "magneturl"]
         depth = 1
+
+    def get_str_info_hash(self, obj: models.Torrent) -> str:
+        """Get the Torrent infohash from the given model.
+
+        Args:
+            obj models.Torrent: the torrent object
+
+        Returns:
+            str: torrent object infohash
+        """
+        return obj.str_info_hash

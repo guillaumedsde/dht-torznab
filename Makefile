@@ -24,7 +24,7 @@ black-check:
 
 .PHONY: bandit
 bandit:
-	bandit -r *.py api/*.py torznab/*.py
+	bandit -r *.py api/*.py torznab/*.py -c .bandit.yml
 
 .PHONY: mypy
 mypy:
@@ -32,10 +32,14 @@ mypy:
 
 .PHONY: pytype
 pytype:
-	pytype .
+	pytype . --config setup.cfg
 
 .PHONY: checks
 checks: isort-check flake8 black-check bandit mypy pytype safety
+
+.PHONY: tests
+tests: 
+	py.test --cov api --cov-report=xml --cov-report=term
 
 .PHONY: format
 format: isort black

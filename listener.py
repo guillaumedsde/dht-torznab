@@ -1,13 +1,18 @@
 #!/usr/bin/env python
+import binascii
 import json
+import re
 from multiprocessing.pool import ThreadPool
 from typing import Dict, Iterator, List, Union
 
 import django
 import greenstalk
+from django.contrib.postgres.search import SearchVector
 from environs import Env
 
 django.setup()
+
+SPLIT_TOKENS_REGEX = r"(?u)\b\w\w+\b"
 
 from api import models  # noqa: E402
 
@@ -15,21 +20,45 @@ from api import models  # noqa: E402
 def create_torrent_files(
     file_dicts: List[Dict[str, Union[str, int]]], torrent: models.Torrent
 ) -> Iterator[models.File]:
+    """Insert Files into DB from given dictionaries reprenting these files.
+
+    Args:
+        file_dicts (List[Dict[str, Union[str, int]]]): Dictionaries for Files.
+        torrent (models.Torrent): The torrent the files belong to.
+
+    Yields:
+        Iterator[models.File]: The created File Objects.
+    """
     for file_dict in file_dicts:
         yield models.File(**file_dict, torrent=torrent)
 
 
-def create_torrent(job: greenstalk.Job):
+def create_torrent(job: greenstalk.Job) -> models.Torrent:
+    """Insert torrent from given job into DB.
+
+    Args:
+        job (greenstalk.Job): Job containing torrent JSON info.
+
+    Returns:
+        models.Torrent: Created torrent.
+    """
     torrent_dict = json.loads(job.body)
-    torrent = models.Torrent(
-        info_hash=torrent_dict["infoHash"], name=torrent_dict["name"]
+
+    torrent, created = models.Torrent.objects.get_or_create(
+        info_hash=binascii.unhexlify(torrent_dict["infoHash"]),
+        name=torrent_dict["name"],
+        keywords=" ".join(re.findall(SPLIT_TOKENS_REGEX, torrent_dict["name"])),
     )
 
-    torrent.save()
+    if created:
+        models.File.objects.bulk_create(
+            list(create_torrent_files(torrent_dict["files"], torrent))
+        )
 
-    models.File.objects.bulk_create(
-        list(create_torrent_files(torrent_dict["files"], torrent))
-    )
+        models.Torrent.objects.update(search_vector=SearchVector("keywords"))
+    else:
+        torrent.occurences += 1
+        torrent.save()
 
     return torrent
 
@@ -40,7 +69,7 @@ if __name__ == "__main__":
     env.read_env()  # read .env file, if it exists
 
     beanstalkd_host = env.str("BEANSTALKD_HOST", "localhost")
-    beanstalkd_port = env.int("BEANSTALKD_PORT", 11300)
+    beanstalkd_port = env.int("BEANSTALKD_PORT", 11300)  # noqa: WPS432
     beanstalkd_tube = env.str("BEANSTALKD_TUBE", "magneticod_tube")
     listener_threads = env.int("LISTENER_THREADS", 4)
 

@@ -1,4 +1,4 @@
-"""torznab URL Configuration
+"""torznab URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
@@ -15,21 +15,23 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from rest_framework import routers
 
-from api import views
+from api.views import torrents, torznab
 
 router = routers.DefaultRouter()
 
-router.register(r"torrents", views.TorrentViewSet)
+router.register(r"api/torrents", torrents.TorrentViewSet)
 
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path("", include(router.urls)),
-    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("api", torznab.TorznabView.as_view(), name="torznab"),
 ]
 
-if settings.ADMIN_ENABLED:
-    urlpatterns.append(path("admin/", admin.site.urls))
+
+if settings.DEBUG:
+    urlpatterns += [
+        path("admin/", admin.site.urls),
+        re_path(r"^silk/", include("silk.urls", namespace="silk")),
+    ]

@@ -1,18 +1,21 @@
-
 stages:
   - cache dependencies
-  - analyse
+  - test
   - build
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
 
 .python:
   image: python:3.8-buster
-  stage: analyse
+  stage: test
   variables:
     PIPENV_VENV_IN_PROJECT: enabled
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   before_script:
-    - pip install --no-cache-dir pipenv==2020.11.15
+    - pip install pipenv==2020.11.15
     - pipenv install --dev --deploy
+    - pipenv clean
     - export PATH="$CI_PROJECT_DIR/.venv/bin:$PATH"
   cache:
     key: ${CI_COMMIT_REF_SLUG}
@@ -21,6 +24,7 @@ stages:
       - .cache/pip
       - .pytype
       - .mypy_cache
+      - .pytest_cache
 
 cache-dependencies:
   extends: .python
@@ -38,16 +42,6 @@ flake8:
   script: 
     - make flake8
 
-bandit: 
-  extends: .python
-  script: 
-    - make bandit
-
-isort: 
-  extends: .python
-  script: 
-    - make isort-check
-
 safety: 
   extends: .python
   script: 
@@ -58,11 +52,23 @@ mypy:
   script: 
     - make mypy
 
-# need to fix this
 # pytype: 
 #   extends: .python
 #   script: 
 #     - make pytype
+
+tests: 
+  extends: .python
+  script: 
+    - make tests
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+  artifacts:
+    reports:
+      cobertura: coverage.xml
+
+code_quality:
+  artifacts:
+    paths: [gl-code-quality-report.json]
 
 .build-docker:
   # Official docker image.

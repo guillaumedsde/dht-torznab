@@ -2,27 +2,17 @@ version: "2.4"
 
 services:
   magneticod:
-    image: magneticod-distroless:v0.12.0
+    image: guillaumedsde/magneticod-distroless:latest
     depends_on:
       - beanstalkd
-    build:
-      dockerfile: docker/magneticod.Dockerfile
-      context: .
-      args:
-        MAGNETICOD_VERSION: master
     command: 
       - --database=beanstalkd://beanstalkd:11300/magneticod_tube
       - --verbose
-      - --leech-max-n=200
+      - --leech-max-n=300
       - --indexer-interval=1
-      - --indexer-max-neighbors=2000
+      - --indexer-max-neighbors=5000
   beanstalkd:
-    image: beanstalkd-distroless:latest
-    build:
-      dockerfile: docker/beanstalkd.Dockerfile
-      context: .
-      args:
-        BEANSTALKD_VERSION: "1.12"
+    image: guillaumedsde/beanstalkd-distroless:v1.12
     command:
       - -z 1048560
       - -f 2400000
@@ -35,6 +25,8 @@ services:
     environment:
       POSTGRES_USER: torznab
       POSTGRES_PASSWORD: torznab
+    volumes:
+      - pg-data:/var/lib/postgresql/data
   listener:
     image: torznab-listener:latest
     depends_on:
@@ -68,3 +60,11 @@ services:
     environment:
       DATABASE_URL: postgres://torznab:torznab@postgres:5432/torznab
       DEBUG: "true"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8000:8080
+
+volumes:
+  pg-data:
