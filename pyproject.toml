@@ -4,13 +4,13 @@ version = "0.1.0"
 description = ""
 authors = ["guillaumedsde <30023543+guillaumedsde@users.noreply.github.com>"]
 license = "MIT"
-readme = "README.md"
 packages = [{ include = "dht_torznab" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-aiostalk = "1.1"
-sqlalchemy = "2.0.12"
+greenstalk = "2.0.0"
+sqlalchemy = { version = "2.0.12", extras = ["asyncio"] }
+asyncpg = "0.27.0"
 
 
 [tool.poetry.group.dev.dependencies]
