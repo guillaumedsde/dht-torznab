@@ -2,9 +2,8 @@
 **
 
 # Allow files and directories
-!docker/entrypoint.sh
-!api/
-!torznab/
-!manage.py
-!listener.py
-!Pipfile*
+!dht_torznab/
+!poetry.*
+!pyproject.toml
+
+__pycache__
