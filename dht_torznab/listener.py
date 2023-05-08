@@ -12,7 +12,7 @@ MAX_PARALLEL_COROUTINES = 2
 
 async def insert_torrent_in_db(torrent: dict) -> None:
     async with db.Session.begin() as transaction:
-        insert_statement = (
+        torrent_insert_statement = (
             insert(models.Torrent)
             .values(
                 name=torrent["name"],
@@ -22,8 +22,24 @@ async def insert_torrent_in_db(torrent: dict) -> None:
                 constraint=models.UNIQUE_INFO_HASH_CONSTRAINT_NAME,
                 set_={"occurence_count": models.Torrent.occurence_count + 1},
             )
+            .returning(models.Torrent.torrent_id)
         )
-        await transaction.execute(insert_statement)
+        result = await transaction.execute(torrent_insert_statement)
+
+        torrent_id = result.one().torrent_id
+
+        await transaction.execute(
+            insert(models.File),
+            [
+                {
+                    "path": file["path"],
+                    "size": file["size"],
+                    "torrent_id": torrent_id,
+                }
+                for file in torrent["files"]
+            ],
+        )
+
         await transaction.commit()
 
 
@@ -32,7 +48,7 @@ async def process_job(client: greenstalk.Client) -> None:
     # TODO pydantic validation?
     torrent = json.loads(job.body)
 
-    print(torrent["name"])
+    print(torrent)
 
     await insert_torrent_in_db(torrent)
 
@@ -53,7 +69,7 @@ async def main() -> None:
         # TODO signal handling
         while True:
             await asyncio.gather(
-                *[process_job(client) for i in range(MAX_PARALLEL_COROUTINES)],
+                *[process_job(client) for _ in range(MAX_PARALLEL_COROUTINES)],
             )
 
 
