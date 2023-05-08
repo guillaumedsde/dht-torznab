@@ -1,18 +1,19 @@
-version: "2.4"
-
 services:
   magneticod:
-    image: guillaumedsde/magneticod-distroless:latest
+    build:
+      context: https://github.com/boramalper/magnetico.git#master
+      dockerfile: Dockerfile.magneticod
     depends_on:
       - beanstalkd
-    command: 
+    command:
       - --database=beanstalkd://beanstalkd:11300/magneticod_tube
       - --verbose
       - --leech-max-n=300
       - --indexer-interval=1
       - --indexer-max-neighbors=5000
+
   beanstalkd:
-    image: guillaumedsde/beanstalkd-distroless:v1.12
+    image: guillaumedsde/beanstalkd-distroless:1.13
     command:
       - -z 1048560
       - -f 2400000
