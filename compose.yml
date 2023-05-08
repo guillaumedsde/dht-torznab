@@ -14,7 +14,7 @@ services:
       - --indexer-max-neighbors=10000
 
   beanstalkd:
-    image: guillaumedsde/beanstalkd-distroless:1.12
+    image: guillaumedsde/beanstalkd-distroless:1.13
     command:
       - -b
       - /data
