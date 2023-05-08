@@ -3,20 +3,27 @@ import binascii
 import json
 
 import greenstalk
+from sqlalchemy.dialects.postgresql import insert
 
-from dht_torznab import db, models
+from dht_torznab import db, models, settings
 
 MAX_PARALLEL_COROUTINES = 2
 
 
 async def insert_torrent_in_db(torrent: dict) -> None:
     async with db.Session.begin() as transaction:
-        transaction.add(
-            models.Torrent(
+        insert_statement = (
+            insert(models.Torrent)
+            .values(
                 name=torrent["name"],
                 info_hash=binascii.unhexlify(torrent["infoHash"]),
-            ),
+            )
+            .on_conflict_do_update(
+                constraint=models.UNIQUE_INFO_HASH_CONSTRAINT_NAME,
+                set_={"occurence_count": models.Torrent.occurence_count + 1},
+            )
         )
+        await transaction.execute(insert_statement)
         await transaction.commit()
 
 
@@ -33,10 +40,13 @@ async def process_job(client: greenstalk.Client) -> None:
 
 
 async def main() -> None:
+    url = settings.get_settings().BEANSTALKD_URL
+    tube = url.path.rstrip("/")
+
     with greenstalk.Client(
-        ("127.0.0.1", 11300),
-        use="magneticod_tube",
-        watch="magneticod_tube",
+        (url.host, url.port),
+        use=tube,
+        watch=tube,
     ) as client:
         # TODO signal handling
         while True:
