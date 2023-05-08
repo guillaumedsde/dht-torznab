@@ -41,7 +41,9 @@ async def process_job(client: greenstalk.Client) -> None:
 
 async def main() -> None:
     url = settings.get_settings().BEANSTALKD_URL
-    tube = url.path.rstrip("/")
+
+    print(f"Listening to {url}")
+    tube = url.path.lstrip("/")
 
     with greenstalk.Client(
         (url.host, url.port),

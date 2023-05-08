@@ -1,4 +1,5 @@
 services:
+
   magneticod:
     build:
       context: https://github.com/boramalper/magnetico.git#master
@@ -21,21 +22,59 @@ services:
       - -f
       - "2400000"
       - -z
-      - "1048560"
+      - "10000000"
     volumes:
-      - beanstalkd-binlog:/data
+      - type: volume
+        source: beanstalkd-binlog
+        target: /data
     ports:
-      - 127.0.0.1:11300:11300
+      - target: 11300
+        published: 11300
+        protocol: tcp
 
   postgres:
     image: postgres:15-alpine
     ports:
-      - 127.0.0.1:5432:5432
+      - target: 5432
+        published: 5432
+        protocol: tcp
     environment:
       POSTGRES_USER: torznab
       POSTGRES_PASSWORD: torznab
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - type: volume
+        source: pg-data
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "pg_isready"
+      start_period: 5s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  listener:
+    build:
+      context: .
+    depends_on:
+      create-ddl:
+        condition: service_completed_successfully
+    environment:
+      &common-env-vars
+      DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:torznab@postgres/"
+      DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
+
+  create-ddl:
+    build:
+      context: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: *common-env-vars
+    command:
+      - "-m"
+      - "dht_torznab.create_ddl"
 
 volumes:
   pg-data:
