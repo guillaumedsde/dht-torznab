@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "dht-torznab"
+version = "0.1.0"
+description = ""
+authors = ["guillaumedsde <30023543+guillaumedsde@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "dht_torznab" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiostalk = "1.1"
+sqlalchemy = "2.0.12"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "0.0.265"
+mypy = "1.2.0"
+black = "23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+select = ["ALL"]
+ignore = [
+    # Missing docstring in public module
+    "D100",
+    # Missing docstring in public class
+    "D101",
+    # Missing docstring in public package
+    "D104",
+    # no-blank-line-before-class
+    "D211",
+    # multi-line-summary-second-line
+    "D213",
+]
+
+src = ["dht_torznab"]
+
+# Same as Black.
+line-length = 88
+
+target-version = "py311"
+
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["sqlalchemy.ext.mypy.plugin"]
