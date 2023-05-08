@@ -1,21 +1,12 @@
 import asyncio
 import binascii
 import json
-import signal
 
 import greenstalk
 
 from dht_torznab import db, models
 
 MAX_PARALLEL_COROUTINES = 2
-
-run = True
-
-
-def signal_handler(signal, frame):
-    global run
-    print("exiting")
-    run = False
 
 
 async def insert_torrent_in_db(torrent: dict) -> None:
@@ -47,13 +38,12 @@ async def main() -> None:
         use="magneticod_tube",
         watch="magneticod_tube",
     ) as client:
-        while run:
+        # TODO signal handling
+        while True:
             await asyncio.gather(
                 *[process_job(client) for i in range(MAX_PARALLEL_COROUTINES)],
             )
 
 
 if __name__ == "__main__":
-    # TODO better signal handling
-    signal.signal(signal.SIGINT, signal_handler)
     asyncio.run(main())
