@@ -8,64 +8,35 @@ services:
     command:
       - --database=beanstalkd://beanstalkd:11300/magneticod_tube
       - --verbose
-      - --leech-max-n=300
+      - --leech-max-n=500
       - --indexer-interval=1
-      - --indexer-max-neighbors=5000
+      - --indexer-max-neighbors=10000
 
   beanstalkd:
-    image: guillaumedsde/beanstalkd-distroless:1.13
+    image: guillaumedsde/beanstalkd-distroless:1.12
     command:
-      - -z 1048560
-      - -f 2400000
+      - -b
+      - /data
+      - -V
+      - -f
+      - "2400000"
+      - -z
+      - "1048560"
+    volumes:
+      - beanstalkd-binlog:/data
     ports:
-      - 11300:11300
+      - 127.0.0.1:11300:11300
+
   postgres:
-    image: postgres:13-alpine
+    image: postgres:15-alpine
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
     environment:
       POSTGRES_USER: torznab
       POSTGRES_PASSWORD: torznab
     volumes:
       - pg-data:/var/lib/postgresql/data
-  listener:
-    image: torznab-listener:latest
-    depends_on:
-      - postgres
-      - beanstalkd
-    build:
-      dockerfile: docker/Dockerfile
-      context: .
-      target: dev
-    entrypoint: /opt/app/listener.py
-    user: 1000:1000
-    volumes:
-      - .:/opt/app
-    environment:
-      DJANGO_SETTINGS_MODULE: torznab.settings
-      BEANSTALKD_HOST: beanstalkd
-      DATABASE_URL: postgres://torznab:torznab@postgres:5432/torznab
-  api:
-    image: torznab-api:latest
-    depends_on:
-      - postgres
-    build:
-      dockerfile: docker/Dockerfile
-      context: .
-      target: dev
-    user: 1000:1000
-    ports:
-      - 8080:8080
-    volumes:
-      - .:/opt/app
-    environment:
-      DATABASE_URL: postgres://torznab:torznab@postgres:5432/torznab
-      DEBUG: "true"
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8000:8080
 
 volumes:
   pg-data:
+  beanstalkd-binlog:
