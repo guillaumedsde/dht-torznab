@@ -26,7 +26,8 @@ WORKDIR /app
 COPY --from=build --chown=1000:1000 /app/.venv /app/.venv
 COPY --chown=1000:1000 dht_torznab dht_torznab
 
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1
 
 ENTRYPOINT [ "/app/.venv/bin/python" ]
 CMD [ "-m", "dht_torznab.listener" ]
