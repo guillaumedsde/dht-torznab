@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import Computed, Index
+from sqlalchemy import Index
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.schema import ForeignKey, UniqueConstraint
 from sqlalchemy_utils import TSVectorType
@@ -22,7 +22,6 @@ class Torrent(Base):
 
     search_vector = mapped_column(
         TSVectorType("name", regconfig=PGSQL_DICTIONARY),
-        Computed(f"""to_tsvector('{PGSQL_DICTIONARY}', "name")""", persisted=True),
     )
 
     files: Mapped[list["File"]] = relationship(back_populates="torrent")

@@ -1,14 +1,28 @@
 import asyncio
 import binascii
 import json
+import re
+from collections import Counter
 
 import greenstalk
 from sqlalchemy import Transaction
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.dialects.postgresql import TSVECTOR, insert
+from sqlalchemy.sql.expression import cast
 
 from dht_torznab import db, models, settings
 
 MAX_PARALLEL_COROUTINES = 2
+
+
+TOKEN_SEPERATOR_REGEX = re.compile(r"\W+")
+
+
+def build_pgsql_search_vector(torrent_name: str) -> str:
+    token_list = TOKEN_SEPERATOR_REGEX.split(torrent_name)
+    token_counts = Counter(token_list)
+    # FIXME: this is buggy for
+    # [parameters: ('Prokofiev - Romeo and Juliet (Maazel)', b'\xa7\xbb\x1d\xcf]`\xd5B\xd8\xd3\xb2\xae(d\x883N\x17\xd21', 1, "'Prokofiev':1 'Romeo':1 'and':1 'Juliet':1 'Maazel':1 '':1", 1)]
+    return " ".join(f"'{token}':{count}" for token, count in token_counts.items())
 
 
 async def insert_torrent(transaction: Transaction, torrent: dict) -> int:
@@ -17,6 +31,7 @@ async def insert_torrent(transaction: Transaction, torrent: dict) -> int:
         .values(
             name=torrent["name"],
             info_hash=binascii.unhexlify(torrent["infoHash"]),
+            search_vector=cast(build_pgsql_search_vector(torrent["name"]), TSVECTOR),
         )
         .on_conflict_do_update(
             constraint=models.UNIQUE_INFO_HASH_CONSTRAINT_NAME,
