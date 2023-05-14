@@ -3,6 +3,7 @@ import binascii
 import json
 
 import greenstalk
+from sqlalchemy import Transaction
 from sqlalchemy.dialects.postgresql import insert
 
 from dht_torznab import db, models, settings
@@ -10,35 +11,47 @@ from dht_torznab import db, models, settings
 MAX_PARALLEL_COROUTINES = 2
 
 
+async def insert_torrent(transaction: Transaction, torrent: dict) -> int:
+    torrent_insert_statement = (
+        insert(models.Torrent)
+        .values(
+            name=torrent["name"],
+            info_hash=binascii.unhexlify(torrent["infoHash"]),
+        )
+        .on_conflict_do_update(
+            constraint=models.UNIQUE_INFO_HASH_CONSTRAINT_NAME,
+            set_={"occurence_count": models.Torrent.occurence_count + 1},
+        )
+        .returning(models.Torrent.torrent_id)
+    )
+    result = await transaction.execute(torrent_insert_statement)
+
+    return result.one().torrent_id
+
+
+async def insert_files(
+    transaction: Transaction,
+    torrent_id: int,
+    files: list[dict],
+) -> None:
+    await transaction.execute(
+        insert(models.File),
+        [
+            {
+                "path": file["path"],
+                "size": file["size"],
+                "torrent_id": torrent_id,
+            }
+            for file in files
+        ],
+    )
+
+
 async def insert_torrent_in_db(torrent: dict) -> None:
     async with db.Session.begin() as transaction:
-        torrent_insert_statement = (
-            insert(models.Torrent)
-            .values(
-                name=torrent["name"],
-                info_hash=binascii.unhexlify(torrent["infoHash"]),
-            )
-            .on_conflict_do_update(
-                constraint=models.UNIQUE_INFO_HASH_CONSTRAINT_NAME,
-                set_={"occurence_count": models.Torrent.occurence_count + 1},
-            )
-            .returning(models.Torrent.torrent_id)
-        )
-        result = await transaction.execute(torrent_insert_statement)
+        torrent_id = await insert_torrent(transaction, torrent)
 
-        torrent_id = result.one().torrent_id
-
-        await transaction.execute(
-            insert(models.File),
-            [
-                {
-                    "path": file["path"],
-                    "size": file["size"],
-                    "torrent_id": torrent_id,
-                }
-                for file in torrent["files"]
-            ],
-        )
+        await insert_files(transaction, torrent_id, torrent["files"])
 
         await transaction.commit()
 
