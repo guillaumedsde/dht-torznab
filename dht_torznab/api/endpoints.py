@@ -37,9 +37,9 @@ def _build_xml(torrents: list[models.Torrent], offset: int) -> str:
 @router.get("")
 async def torznab_endpoint(
     q: str | None = None,
-    offset: Annotated[int | None, Query(ge=0)] = 0,
+    offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[
-        int | None,
+        int,
         Query(gt=1, lte=MAX_PAGE_SIZE),
     ] = MAX_PAGE_SIZE,
 ) -> Response:
