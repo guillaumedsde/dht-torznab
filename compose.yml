@@ -81,6 +81,22 @@ services:
     command:
       - "-m"
       - "dht_torznab.create_ddl"
+  
+  # FIXME DRY
+  api:
+    build:
+      context: .
+    depends_on:
+      create-ddl:
+        condition: service_completed_successfully
+    environment: *common-env-vars
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+    command:
+      - "-m"
+      - "dht_torznab.api.main"
 
 volumes:
   pg-data:
