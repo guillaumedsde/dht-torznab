@@ -10,7 +10,7 @@ async def search_torrents(
     search_query: str | None = None,
     limit: int | None = None,
     offset: int | None = None,
-):  # TODO typing
+) -> list[models.Torrent]:
     statement = select(
         models.Torrent,
     ).options(

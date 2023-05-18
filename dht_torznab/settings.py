@@ -12,12 +12,18 @@ class APISettings(pydantic.BaseModel):
 
 class Settings(pydantic.BaseSettings):
     PGSQL_DSN: pydantic.PostgresDsn = pydantic.Field(
-        pydantic.PostgresDsn("postgresql+asyncpg://torznab:torznab@localhost/"),
+        pydantic.parse_obj_as(
+            pydantic.PostgresDsn,
+            "postgresql+asyncpg://torznab:torznab@localhost/",
+        ),
         description="PostgreSQL connection URL",
     )
     # TODO: protocol validation?
     BEANSTALKD_URL: pydantic.AnyUrl = pydantic.Field(
-        pydantic.AnyUrl("beanstalkd://localhost:11300/magneticod_tube"),
+        pydantic.parse_obj_as(
+            pydantic.AnyUrl,
+            "beanstalkd://localhost:11300/magneticod_tube",
+        ),
         description="Beanstalkd connection URL",
     )
 
@@ -31,5 +37,5 @@ class Settings(pydantic.BaseSettings):
 
 
 @lru_cache
-def get_settings():
+def get_settings() -> Settings:
     return Settings()

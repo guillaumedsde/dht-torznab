@@ -15,7 +15,7 @@ MAX_PAGE_SIZE = get_settings().API.MAX_PAGE_SIZE
 
 
 # TODO build this async
-def _build_xml(torrents: list[models.Torrent], offset: int) -> str:
+def _build_xml(torrents: list[models.Torrent], offset: int) -> bytes:
     xml_root_node = torznab.xml_root()
     xml_channel_node = torznab.xml_channel(
         root=xml_root_node,
@@ -45,5 +45,5 @@ async def torznab_endpoint(
 ) -> Response:
     torrents = await queries.search_torrents(q, limit, offset)
 
-    xml_string = _build_xml(torrents, offset)
-    return Response(content=xml_string, media_type="application/xml")
+    xml_bytes = _build_xml(torrents, offset)
+    return Response(content=xml_bytes, media_type="application/xml")
