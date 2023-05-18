@@ -41,14 +41,20 @@ services:
     environment:
       POSTGRES_USER: torznab
       POSTGRES_PASSWORD: torznab
+      POSTGRES_DB: torznab
     volumes:
       - type: volume
         source: pg-data
         target: /var/lib/postgresql/data
+    command:
+      - "postgres"
+      - "-c"
+      - "log_statement=all"
+
     healthcheck:
       test:
         - "CMD-SHELL"
-        - "pg_isready"
+        - "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"
       start_period: 5s
       interval: 10s
       timeout: 5s
