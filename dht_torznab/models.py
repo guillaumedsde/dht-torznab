@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import sqlalchemy
-from sqlalchemy import Index, func
+from sqlalchemy import TIMESTAMP, Index, func
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -13,6 +13,10 @@ from sqlalchemy_utils import TSVectorType
 
 
 class Base(DeclarativeBase):
+    type_annotation_map = {
+        datetime: TIMESTAMP(timezone=True),
+    }
+
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
