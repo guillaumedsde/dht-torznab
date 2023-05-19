@@ -67,3 +67,4 @@ python_version = "3.11"
 strict = true
 ignore_missing_imports = true
 plugins = ["sqlalchemy.ext.mypy.plugin", "pydantic.mypy"]
+files = ["dht_torznab/"]
