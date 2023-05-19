@@ -1,24 +1,26 @@
 import asyncio
 
+import pydantic
 from sqlalchemy import func, select
-from sqlalchemy.orm import load_only
 
-from dht_torznab import db, models
+from dht_torznab import db, models, schemas
 
 
 async def search_torrents(
     search_query: str | None = None,
     limit: int | None = None,
     offset: int | None = None,
-) -> list[models.Torrent]:
-    statement = select(
-        models.Torrent,
-    ).options(
-        load_only(
+) -> list[schemas.TorrentSchema]:
+    statement = (
+        select(
             models.Torrent.torrent_id,
             models.Torrent.name,
             models.Torrent.info_hash,
-        ),
+            func.count(models.File.torrent_id).label("file_count"),
+            func.sum(models.File.size).label("size"),
+        )
+        .join(models.File)
+        .group_by(models.Torrent.torrent_id)
     )
 
     if limit:
@@ -39,7 +41,10 @@ async def search_torrents(
     async with db.Session() as session:
         result = await session.execute(statement)
 
-        return [result.Torrent for result in result.all()]
+        return pydantic.parse_obj_as(
+            list[schemas.TorrentSchema],
+            (row._asdict() for row in result.all()),
+        )
 
 
 if __name__ == "__main__":

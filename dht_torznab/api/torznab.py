@@ -2,7 +2,7 @@
 # generating XML, not parsing it
 from lxml import etree as ET  # nosec # noqa: N812
 
-from dht_torznab import models
+from dht_torznab import schemas
 
 NS = {
     "atom": "http://www.w3.org/2005/Atom",
@@ -57,7 +57,7 @@ def xml_channel(
     return channel
 
 
-def xml_torrents(channel: ET._Element, torrents: list[models.Torrent]) -> None:
+def xml_torrents(channel: ET._Element, torrents: list[schemas.TorrentSchema]) -> None:
     for torrent in torrents:
         item = ET.SubElement(channel, "item")
 
@@ -66,13 +66,31 @@ def xml_torrents(channel: ET._Element, torrents: list[models.Torrent]) -> None:
             torrent.torrent_id,
         )
         ET.SubElement(item, "link").text = torrent.magneturl
+        ET.SubElement(item, "size").text = str(torrent.size)
 
+        ET.SubElement(
+            item,
+            "enclosure",
+            attrib={
+                "url": torrent.magneturl,
+                "length": str(torrent.size),
+                "type": "application/x-bittorrent",
+            },
+        )
         ET.SubElement(
             item,
             ET.QName(NS["torznab"], "attr"),
             attrib={
                 "name": "infohash",
                 "value": torrent.str_info_hash,
+            },
+        )
+        ET.SubElement(
+            item,
+            ET.QName(NS["torznab"], "attr"),
+            attrib={
+                "name": "files",
+                "value": str(torrent.file_count),
             },
         )
         ET.SubElement(

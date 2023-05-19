@@ -1,6 +1,3 @@
-import binascii
-from urllib import parse
-
 import sqlalchemy
 from sqlalchemy import Index
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -34,28 +31,6 @@ class Torrent(Base):
         UniqueConstraint(info_hash, name=UNIQUE_INFO_HASH_CONSTRAINT_NAME),
         Index("idx_torrent_name_tsv", search_vector, postgresql_using="gin"),
     )
-
-    @property
-    def str_info_hash(self) -> str:
-        """Compute a string representation of the binary torrent info hash.
-
-        Returns:
-        -------
-            str: torrent infohash
-        """
-        return binascii.b2a_hex(self.info_hash).decode("utf-8")
-
-    @property
-    def magneturl(self) -> str:
-        """Build the torrent magnet URL.
-
-        Returns:
-        -------
-            str: torrent magnet URL
-        """
-        url_encoded_name = parse.quote(self.name)
-
-        return f"magnet:?xt=urn:btih:{self.str_info_hash}&dn={url_encoded_name}"
 
 
 class File(Base):

@@ -4,7 +4,7 @@ import fastapi
 from fastapi import Query, Response
 from lxml import etree as ET  # nosec # noqa: N812
 
-from dht_torznab import models, queries
+from dht_torznab import queries, schemas
 from dht_torznab.api import torznab
 from dht_torznab.settings import get_settings
 
@@ -15,7 +15,7 @@ MAX_PAGE_SIZE = get_settings().API.MAX_PAGE_SIZE
 
 
 # TODO build this async
-def _build_xml(torrents: list[models.Torrent], offset: int) -> bytes:
+def _build_xml(torrents: list[schemas.TorrentSchema], offset: int) -> bytes:
     xml_root_node = torznab.xml_root()
     xml_channel_node = torznab.xml_channel(
         root=xml_root_node,
@@ -43,7 +43,7 @@ async def torznab_endpoint(
         Query(gt=1, lte=MAX_PAGE_SIZE),
     ] = MAX_PAGE_SIZE,
 ) -> Response:
-    torrents = await queries.search_torrents(q, limit, offset)
+    torrent_rows = await queries.search_torrents(q, limit, offset)
 
-    xml_bytes = _build_xml(torrents, offset)
+    xml_bytes = _build_xml(torrent_rows, offset)
     return Response(content=xml_bytes, media_type="application/xml")
