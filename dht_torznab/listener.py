@@ -26,7 +26,7 @@ def build_pgsql_search_vector(torrent_name: str) -> Function:
 
 async def insert_torrent(session: AsyncSession, torrent: dict[str, Any]) -> int:
     torrent_insert_statement = (
-        insert(models.Torrent)
+        insert(models.TorrentsModel)
         .values(
             name=torrent["name"],
             info_hash=binascii.unhexlify(torrent["infoHash"]),
@@ -34,13 +34,13 @@ async def insert_torrent(session: AsyncSession, torrent: dict[str, Any]) -> int:
         )
         .on_conflict_do_update(
             constraint=models.UNIQUE_INFO_HASH_CONSTRAINT_NAME,
-            set_={"occurence_count": models.Torrent.occurence_count + 1},
+            set_={"occurence_count": models.TorrentsModel.occurence_count + 1},
         )
-        .returning(models.Torrent.torrent_id)
+        .returning(models.TorrentsModel.id)
     )
     result = await session.execute(torrent_insert_statement)
 
-    return result.one().torrent_id
+    return result.one().id
 
 
 async def insert_files(
@@ -49,7 +49,7 @@ async def insert_files(
     files: list[dict[str, Any]],
 ) -> None:
     await session.execute(
-        insert(models.File),
+        insert(models.FilesModel),
         [
             {
                 "path": file["path"],

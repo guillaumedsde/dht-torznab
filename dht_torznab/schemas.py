@@ -5,7 +5,7 @@ import pydantic
 
 
 class TorrentSchema(pydantic.BaseModel):
-    torrent_id: int = pydantic.Field(..., ge=0)
+    id: int = pydantic.Field(..., ge=0)
     name: str
     info_hash: bytes
     file_count: int = pydantic.Field(..., gt=0)

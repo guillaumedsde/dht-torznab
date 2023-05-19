@@ -1,12 +1,24 @@
+from datetime import datetime
+
 import sqlalchemy
-from sqlalchemy import Index
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import Index, func
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    mapped_column,
+    relationship,
+)
 from sqlalchemy.schema import ForeignKey, UniqueConstraint
 from sqlalchemy_utils import TSVectorType
 
 
 class Base(DeclarativeBase):
-    pass
+    id: Mapped[int] = mapped_column(primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(),
+        onupdate=func.current_timestamp(),
+    )
 
 
 UNIQUE_INFO_HASH_CONSTRAINT_NAME = "unique_info_hash"
@@ -14,8 +26,7 @@ UNIQUE_TORRENT_ID_FILE_PATH_CONSTRAINT_NAME = "unique_torrent_id_file_path"
 PGSQL_DICTIONARY = "pg_catalog.simple"
 
 
-class Torrent(Base):
-    torrent_id: Mapped[int] = mapped_column(primary_key=True)
+class TorrentsModel(Base):
     name: Mapped[str]
     info_hash: Mapped[bytes] = mapped_column()
     occurence_count: Mapped[int] = mapped_column(default=1)
@@ -24,7 +35,7 @@ class Torrent(Base):
         TSVectorType("name", regconfig=PGSQL_DICTIONARY),
     )
 
-    files: Mapped[list["File"]] = relationship(back_populates="torrent")
+    files: Mapped[list["FilesModel"]] = relationship(back_populates="torrent")
 
     __tablename__ = "torrents"
     __table_args__ = (
@@ -33,12 +44,11 @@ class Torrent(Base):
     )
 
 
-class File(Base):
-    file_id: Mapped[int] = mapped_column(primary_key=True)
+class FilesModel(Base):
     path: Mapped[str] = mapped_column()
     size: Mapped[int] = mapped_column(sqlalchemy.BIGINT)
 
-    torrent_id: Mapped[int] = mapped_column(ForeignKey(Torrent.torrent_id))
-    torrent: Mapped[Torrent] = relationship(Torrent, back_populates="files")
+    torrent_id: Mapped[int] = mapped_column(ForeignKey(TorrentsModel.id))
+    torrent: Mapped[TorrentsModel] = relationship(TorrentsModel, back_populates="files")
 
     __tablename__ = "files"

@@ -13,14 +13,14 @@ async def search_torrents(
 ) -> list[schemas.TorrentSchema]:
     statement = (
         select(
-            models.Torrent.torrent_id,
-            models.Torrent.name,
-            models.Torrent.info_hash,
-            func.count(models.File.torrent_id).label("file_count"),
-            func.sum(models.File.size).label("size"),
+            models.TorrentsModel.id,
+            models.TorrentsModel.name,
+            models.TorrentsModel.info_hash,
+            func.count(models.FilesModel.torrent_id).label("file_count"),
+            func.sum(models.FilesModel.size).label("size"),
         )
-        .join(models.File)
-        .group_by(models.Torrent.torrent_id)
+        .join(models.FilesModel)
+        .group_by(models.TorrentsModel.id)
     )
 
     if limit:
@@ -33,9 +33,9 @@ async def search_torrents(
         tsquery = func.plainto_tsquery(models.PGSQL_DICTIONARY, search_query)
 
         statement = statement.where(
-            models.Torrent.search_vector.bool_op("@@")(tsquery),
+            models.TorrentsModel.search_vector.bool_op("@@")(tsquery),
         ).order_by(
-            func.ts_rank(models.Torrent.search_vector, tsquery).desc(),
+            func.ts_rank(models.TorrentsModel.search_vector, tsquery).desc(),
         )
 
     async with db.Session() as session:

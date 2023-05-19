@@ -62,9 +62,7 @@ def xml_torrents(channel: ET._Element, torrents: list[schemas.TorrentSchema]) ->
         item = ET.SubElement(channel, "item")
 
         ET.SubElement(item, "title").text = torrent.name
-        ET.SubElement(item, "guid", attrib={"isPermaLink": "false"}).text = str(
-            torrent.torrent_id,
-        )
+        ET.SubElement(item, "guid", attrib={"isPermaLink": "false"}).text = torrent.id
         ET.SubElement(item, "link").text = torrent.magneturl
         ET.SubElement(item, "size").text = str(torrent.size)
 
