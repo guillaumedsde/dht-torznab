@@ -39,7 +39,7 @@ class Torrent(Base):
     def str_info_hash(self) -> str:
         """Compute a string representation of the binary torrent info hash.
 
-        Returns
+        Returns:
         -------
             str: torrent infohash
         """
@@ -49,7 +49,7 @@ class Torrent(Base):
     def magneturl(self) -> str:
         """Build the torrent magnet URL.
 
-        Returns
+        Returns:
         -------
             str: torrent magnet URL
         """

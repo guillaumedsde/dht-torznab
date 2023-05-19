@@ -13,14 +13,13 @@ NS = {
 def xml_root() -> ET._Element:
     """Generate the XML root elements for the RSS response.
 
-    Returns
+    Returns:
     -------
         ET._Element: Root XML elements
     """
     ET.register_namespace("atom", NS["atom"])
     ET.register_namespace("torznab", NS["torznab"])
-    root = ET.Element("rss", attrib={"version": "1.0", "encoding": "utf-8"})
-    return root
+    return ET.Element("rss", attrib={"version": "1.0", "encoding": "utf-8"})
 
 
 def xml_channel(

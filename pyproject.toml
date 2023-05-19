@@ -43,6 +43,8 @@ ignore = [
     "D211",
     # multi-line-summary-second-line
     "D213",
+    # Missing type annotation for `self` in method
+    "ANN101",
 ]
 
 src = ["dht_torznab"]
@@ -53,8 +55,12 @@ line-length = 88
 target-version = "py311"
 
 [tool.ruff.per-file-ignores]
-
 "dht_torznab/api/torznab.py" = ["SLF001"]
+"dht_torznab/settings.py" = ["D106"]
+
+
+[tool.ruff.pydocstyle]
+convention = "google"
 
 [tool.mypy]
 python_version = "3.11"
