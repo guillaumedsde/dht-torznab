@@ -8,6 +8,14 @@ class APISettings(pydantic.BaseModel):
         50,
         description="Maximum and default page size for API pages.",
     )
+    MIN_SEARCH_RESULT_RANK: float = pydantic.Field(
+        0.01,
+        ge=0.0,
+        description=(
+            "Minimum ts_rank value below which "
+            "PGSQL search results will not be displayed by the torznab API."
+        ),
+    )
 
 
 class Settings(pydantic.BaseSettings):

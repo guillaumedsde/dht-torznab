@@ -5,6 +5,7 @@ import pydantic
 from sqlalchemy import func, select
 
 from dht_torznab import db, models, schemas
+from dht_torznab.settings import get_settings
 
 
 async def search_torrents(
@@ -33,9 +34,12 @@ async def search_torrents(
 
     if search_query:
         tsquery = func.plainto_tsquery(models.PGSQL_DICTIONARY, search_query)
+        rank_function = func.ts_rank(models.TorrentsModel.search_vector, tsquery)
 
-        statement = statement.order_by(
-            func.ts_rank(models.TorrentsModel.search_vector, tsquery).desc(),
+        statement = statement.where(
+            rank_function >= get_settings().API.MIN_SEARCH_RESULT_RANK,
+        ).order_by(
+            rank_function.desc(),
         )
 
     # NOTE: this counts all torrents since no filtering is done above,
