@@ -18,7 +18,7 @@ TOKEN_SEPERATOR_REGEX = re.compile(r"\W+")
 
 
 # FIXME: generate this natively in PG?
-def build_pgsql_search_vector(torrent_name: str) -> Function:
+def build_pgsql_search_vector(torrent_name: str) -> Function[Any]:
     token_list = TOKEN_SEPERATOR_REGEX.split(torrent_name)
 
     return func.to_tsvector(models.PGSQL_DICTIONARY, " ".join(token_list))

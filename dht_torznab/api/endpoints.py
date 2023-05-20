@@ -30,7 +30,8 @@ def _build_xml(
     xml_channel_node = torznab.xml_channel(
         root=xml_root_node,
         feed_url=str(url),
-        function=enums.TorznabFunction.SEARCH.value,
+        # NOTE: not using .value as its type hint seems broken
+        function=str(enums.TorznabFunction.SEARCH),
         offset=offset,
         total_count=torrent_count,
     )
