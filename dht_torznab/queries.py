@@ -33,9 +33,7 @@ async def search_torrents(
     if search_query:
         tsquery = func.plainto_tsquery(models.PGSQL_DICTIONARY, search_query)
 
-        statement = statement.where(
-            models.TorrentsModel.search_vector.bool_op("@@")(tsquery),
-        ).order_by(
+        statement = statement.order_by(
             func.ts_rank(models.TorrentsModel.search_vector, tsquery).desc(),
         )
 
