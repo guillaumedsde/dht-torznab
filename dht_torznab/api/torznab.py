@@ -60,7 +60,7 @@ def xml_channel(
 
 
 def xml_torrents(
-    channel: ET._Element, torrents: Generator[schemas.TorrentSchema, None, None]
+    channel: ET._Element, torrents: Generator[schemas.TorrentSchema, None, None],
 ) -> None:
     for torrent in torrents:
         item = ET.SubElement(channel, "item")
