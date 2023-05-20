@@ -1,5 +1,7 @@
 # safe to use lxml instead of defusedxml since we are
 # generating XML, not parsing it
+from collections.abc import Generator
+
 from lxml import etree as ET  # nosec # noqa: N812
 
 from dht_torznab import schemas
@@ -57,7 +59,9 @@ def xml_channel(
     return channel
 
 
-def xml_torrents(channel: ET._Element, torrents: list[schemas.TorrentSchema]) -> None:
+def xml_torrents(
+    channel: ET._Element, torrents: Generator[schemas.TorrentSchema, None, None]
+) -> None:
     for torrent in torrents:
         item = ET.SubElement(channel, "item")
 

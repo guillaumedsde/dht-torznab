@@ -1,4 +1,5 @@
 import asyncio
+from collections.abc import Generator
 
 import pydantic
 from sqlalchemy import func, select
@@ -10,7 +11,7 @@ async def search_torrents(
     search_query: str | None = None,
     limit: int | None = None,
     offset: int | None = None,
-) -> list[schemas.TorrentSchema]:
+) -> Generator[schemas.TorrentSchema, None, None]:
     statement = (
         select(
             models.TorrentsModel.id,
@@ -40,9 +41,9 @@ async def search_torrents(
     async with db.Session() as session:
         result = await session.execute(statement)
 
-        return pydantic.parse_obj_as(
-            list[schemas.TorrentSchema],
-            (row._asdict() for row in result.all()),
+        return (
+            pydantic.parse_obj_as(schemas.TorrentSchema, row._asdict())
+            for row in result.all()
         )
 
 

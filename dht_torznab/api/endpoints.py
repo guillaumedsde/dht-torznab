@@ -1,4 +1,5 @@
 import pathlib
+from collections.abc import Generator
 from typing import Annotated
 
 import fastapi
@@ -18,7 +19,10 @@ MAX_PAGE_SIZE = get_settings().API.MAX_PAGE_SIZE
 
 
 # TODO build this async
-def _build_xml(torrents: list[schemas.TorrentSchema], offset: int) -> bytes:
+def _build_xml(
+    torrents: Generator[schemas.TorrentSchema, None, None],
+    offset: int,
+) -> bytes:
     xml_root_node = torznab.xml_root()
     xml_channel_node = torznab.xml_channel(
         root=xml_root_node,
@@ -38,9 +42,9 @@ def _build_xml(torrents: list[schemas.TorrentSchema], offset: int) -> bytes:
 
 
 async def search(query: str | None, limit: int, offset: int) -> Response:
-    torrent_rows = await queries.search_torrents(query, limit, offset)
+    torrent_rows_generator = await queries.search_torrents(query, limit, offset)
 
-    xml_bytes = _build_xml(torrent_rows, offset)
+    xml_bytes = _build_xml(torrent_rows_generator, offset)
     return Response(content=xml_bytes, media_type="application/xml")
 
 
