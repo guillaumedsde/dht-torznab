@@ -27,6 +27,7 @@ WORKDIR /app
 
 COPY --from=build --chown=1000:1000 /app/.venv /app/.venv
 COPY --chown=1000:1000 dht_torznab dht_torznab
+COPY --chown=1000:1000 gunicorn.conf.py gunicorn.conf.py
 
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1

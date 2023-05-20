@@ -96,7 +96,7 @@ services:
         protocol: tcp
     command:
       - "-m"
-      - "dht_torznab.api.main"
+      - "gunicorn"
 
 volumes:
   pg-data:

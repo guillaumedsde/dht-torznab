@@ -5,5 +5,6 @@
 !dht_torznab/
 !poetry.*
 !pyproject.toml
+!gunicorn.conf.py
 
 **/__pycache__/
