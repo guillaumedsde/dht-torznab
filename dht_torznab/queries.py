@@ -11,7 +11,7 @@ async def search_torrents(
     search_query: str | None = None,
     limit: int | None = None,
     offset: int | None = None,
-) -> Generator[schemas.TorrentSchema, None, None]:
+) -> tuple[Generator[schemas.TorrentSchema, None, None], int]:
     statement = (
         select(
             models.TorrentsModel.id,
@@ -38,13 +38,23 @@ async def search_torrents(
             func.ts_rank(models.TorrentsModel.search_vector, tsquery).desc(),
         )
 
-    async with db.Session() as session:
-        result = await session.execute(statement)
+    # NOTE: this counts all torrents since no filtering is done above,
+    #       this might not be desirable.
+    count_statement = select(func.count()).select_from(
+        models.TorrentsModel,
+    )
+
+    async with db.Session(bind=db.repeatable_read_engine) as session:
+        torrent_count_result = await session.execute(count_statement)
+
+        torrent_count = torrent_count_result.scalar_one()
+
+        torrent_results = await session.execute(statement)
 
         return (
             pydantic.parse_obj_as(schemas.TorrentSchema, row._asdict())
-            for row in result.all()
-        )
+            for row in torrent_results.all()
+        ), torrent_count
 
 
 if __name__ == "__main__":
