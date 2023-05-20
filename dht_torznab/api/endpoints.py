@@ -1,12 +1,14 @@
+import pathlib
 from typing import Annotated
 
 import fastapi
 from fastapi import Query, Response
+from fastapi.responses import FileResponse
 from lxml import etree as ET  # nosec # noqa: N812
 from starlette import status
 
 from dht_torznab import queries, schemas
-from dht_torznab.api import enums, torznab
+from dht_torznab.api import enums, static, torznab
 from dht_torznab.settings import get_settings
 
 router = fastapi.APIRouter()
@@ -42,6 +44,11 @@ async def search(query: str | None, limit: int, offset: int) -> Response:
     return Response(content=xml_bytes, media_type="application/xml")
 
 
+async def capabilities() -> FileResponse:
+    capabilities_xml_path = pathlib.Path(*static.__path__) / "capabilities.xml"
+    return FileResponse(path=capabilities_xml_path)
+
+
 @router.get("")
 async def torznab_endpoint(
     function: Annotated[enums.TorznabFunction, Query(alias="t")],
@@ -53,6 +60,8 @@ async def torznab_endpoint(
     ] = MAX_PAGE_SIZE,
 ) -> Response:
     match function:
+        case enums.TorznabFunction.CAPS:
+            return await capabilities()
         case enums.TorznabFunction.SEARCH:
             return await search(query, limit, offset)
         case _:
