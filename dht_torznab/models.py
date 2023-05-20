@@ -52,7 +52,7 @@ class FilesModel(Base):
     path: Mapped[str] = mapped_column()
     size: Mapped[int] = mapped_column(sqlalchemy.BIGINT)
 
-    torrent_id: Mapped[int] = mapped_column(ForeignKey(TorrentsModel.id))
+    torrent_id: Mapped[int] = mapped_column(ForeignKey(TorrentsModel.id), index=True)
     torrent: Mapped[TorrentsModel] = relationship(TorrentsModel, back_populates="files")
 
     __tablename__ = "files"
