@@ -3,9 +3,10 @@ from typing import Annotated
 import fastapi
 from fastapi import Query, Response
 from lxml import etree as ET  # nosec # noqa: N812
+from starlette import status
 
 from dht_torznab import queries, schemas
-from dht_torznab.api import torznab
+from dht_torznab.api import enums, torznab
 from dht_torznab.settings import get_settings
 
 router = fastapi.APIRouter()
@@ -34,16 +35,25 @@ def _build_xml(torrents: list[schemas.TorrentSchema], offset: int) -> bytes:
     )
 
 
+async def search(query: str | None, limit: int, offset: int) -> Response:
+    torrent_rows = await queries.search_torrents(query, limit, offset)
+
+    xml_bytes = _build_xml(torrent_rows, offset)
+    return Response(content=xml_bytes, media_type="application/xml")
+
+
 @router.get("")
 async def torznab_endpoint(
-    q: str | None = None,
+    function: Annotated[enums.TorznabFunction, Query(alias="t")],
+    query: Annotated[str | None, Query(alias="q")] = None,
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[
         int,
         Query(gt=1, lte=MAX_PAGE_SIZE),
     ] = MAX_PAGE_SIZE,
 ) -> Response:
-    torrent_rows = await queries.search_torrents(q, limit, offset)
-
-    xml_bytes = _build_xml(torrent_rows, offset)
-    return Response(content=xml_bytes, media_type="application/xml")
+    match function:
+        case enums.TorznabFunction.SEARCH:
+            return await search(query, limit, offset)
+        case _:
+            raise fastapi.HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED)
