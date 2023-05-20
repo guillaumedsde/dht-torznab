@@ -50,6 +50,8 @@ services:
       - "postgres"
       - "-c"
       - "log_statement=all"
+      - "-c"
+      - "max_connections=200"
 
     healthcheck:
       test:
