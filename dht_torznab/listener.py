@@ -11,9 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dht_torznab import db, models, settings
 
-MAX_PARALLEL_COROUTINES = 2
-
-
 TOKEN_SEPERATOR_REGEX = re.compile(r"\W+")
 
 
@@ -95,9 +92,7 @@ async def main() -> None:
     ) as client:
         # TODO signal handling
         while True:
-            await asyncio.gather(
-                *[process_job(client) for _ in range(MAX_PARALLEL_COROUTINES)],
-            )
+            await process_job(client)
 
 
 if __name__ == "__main__":
