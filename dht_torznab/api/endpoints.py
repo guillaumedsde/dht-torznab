@@ -1,6 +1,6 @@
 import pathlib
 from collections.abc import Generator
-from typing import Annotated
+from typing import Annotated, Optional
 
 import fastapi
 from fastapi import Query, Request, Response
@@ -45,7 +45,7 @@ def _build_xml(
     )
 
 
-async def search(query: str | None, limit: int, offset: int, url: URL) -> Response:
+async def search(query: Optional[str], limit: int, offset: int, url: URL) -> Response:
     torrent_rows_generator, torrent_count = await queries.search_torrents(
         query,
         limit,
@@ -65,17 +65,15 @@ async def capabilities() -> FileResponse:
 async def torznab_endpoint(
     function: Annotated[enums.TorznabFunction, Query(alias="t")],
     request: Request,
-    query: Annotated[str | None, Query(alias="q")] = None,
+    query: Annotated[Optional[str], Query(alias="q")] = None,
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[
         int,
         Query(gt=1, lte=MAX_PAGE_SIZE),
     ] = MAX_PAGE_SIZE,
 ) -> Response:
-    match function:
-        case enums.TorznabFunction.CAPS:
-            return await capabilities()
-        case enums.TorznabFunction.SEARCH:
-            return await search(query, limit, offset, request.url)
-        case _:
-            raise fastapi.HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED)
+    if function == enums.TorznabFunction.CAPS:
+        return await capabilities()
+    if function == enums.TorznabFunction.SEARCH:
+        return await search(query, limit, offset, request.url)
+    raise fastapi.HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED)

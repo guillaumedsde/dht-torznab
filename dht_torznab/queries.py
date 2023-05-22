@@ -1,5 +1,6 @@
 import asyncio
 from collections.abc import Generator
+from typing import Optional
 
 import pydantic
 from sqlalchemy import func, select
@@ -9,9 +10,9 @@ from dht_torznab.settings import get_settings
 
 
 async def search_torrents(
-    search_query: str | None = None,
-    limit: int | None = None,
-    offset: int | None = None,
+    search_query: Optional[str] = None,
+    limit: Optional[None] = None,
+    offset: Optional[None] = None,
 ) -> tuple[Generator[schemas.TorrentSchema, None, None], int]:
     statement = (
         select(
