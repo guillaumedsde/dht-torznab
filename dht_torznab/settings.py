@@ -22,7 +22,7 @@ class Settings(pydantic.BaseSettings):
     PGSQL_DSN: pydantic.PostgresDsn = pydantic.Field(
         pydantic.parse_obj_as(
             pydantic.PostgresDsn,
-            "postgresql+asyncpg://torznab:torznab@localhost/",
+            "postgresql+asyncpg://torznab:torznab@localhost:5432/",
         ),
         description="PostgreSQL connection URL",
     )
