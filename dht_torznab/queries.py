@@ -11,8 +11,8 @@ from dht_torznab.settings import get_settings
 
 async def search_torrents(
     search_query: Optional[str] = None,
-    limit: Optional[None] = None,
-    offset: Optional[None] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
 ) -> tuple[Generator[schemas.TorrentSchema, None, None], int]:
     statement = (
         select(
