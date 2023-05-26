@@ -49,9 +49,9 @@ services:
     command:
       - "postgres"
       - "-c"
-      - "log_statement=all"
+      - "log_min_duration_statement=0"
       - "-c"
-      - "max_connections=200"
+      - "max_connections=500"
 
     healthcheck:
       test:
@@ -83,7 +83,7 @@ services:
     command:
       - "-m"
       - "dht_torznab.create_ddl"
-  
+
   # FIXME DRY
   api:
     build:

@@ -4,7 +4,10 @@ from dht_torznab import settings
 
 # an Engine, which the Session will use for connection
 # resources
-engine = create_async_engine(settings.get_settings().PGSQL_DSN)
+engine = create_async_engine(
+    settings.get_settings().PGSQL_DSN,
+    pool_size=250,
+)
 
 repeatable_read_engine = engine.execution_options(isolation_level="REPEATABLE READ")
 

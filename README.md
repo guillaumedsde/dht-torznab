@@ -6,7 +6,7 @@
 - [x] Search for torrents by name
 - [x] Functional minimal torznab API
 - [ ] torznab API authentication
-- [ ] Implement a seed count updater
+- [x] Implement a peer count updater
   - [bashkirtsevich-llc/aiobtdht](https://github.com/bashkirtsevich-llc)
   - [nitmir/btdht](https://github.com/nitmir/btdht)
 - [ ] Search for torrents by name of its files
