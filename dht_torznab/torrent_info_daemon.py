@@ -21,10 +21,6 @@ SLEEP_WHEN_NO_RESULT = timedelta(seconds=30)
 PARALLEL_WORKERS = 200
 
 
-def _build_bootstrap_nodes_by_ip():
-    global BOOTSTRAP_NODES
-
-
 async def bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
     udp = UDPServer()
     udp.run("0.0.0.0", 12346, loop=loop)
@@ -109,7 +105,6 @@ async def main(loop: asyncio.AbstractEventLoop) -> None:
 
 
 if __name__ == "__main__":
-    _build_bootstrap_nodes_by_ip()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main(loop))
     loop.run_forever()
