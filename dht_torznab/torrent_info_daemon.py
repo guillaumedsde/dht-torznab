@@ -6,6 +6,7 @@ import sqlalchemy.exc
 from aiobtdht import DHT
 from aioudp import UDPServer
 from sqlalchemy import func, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from dht_torznab import db, models
 
@@ -46,10 +47,10 @@ async def bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
     return dht
 
 
-async def update_one_torrent_peer_count(dht_server: DHT, session):
+async def update_one_torrent_peer_count(dht_server: DHT, session: AsyncSession) -> None:
     now = datetime.utcnow()
 
-    async with session.begin() as transaction:
+    async with session.begin():
         select_statement = (
             select(
                 models.TorrentsModel.id,

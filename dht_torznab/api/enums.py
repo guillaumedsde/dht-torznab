@@ -3,10 +3,10 @@ import enum
 
 class StrEnum(str, enum.Enum):
     """StrEnum where auto() returns the field name.
-    See https://docs.python.org/3.9/library/enum.html#using-automatic-values.
 
     Notes:
-        Gotten from https://stackoverflow.com/a/74539097
+        See https://docs.python.org/3.9/library/enum.html#using-automatic-values.
+        Gotten from https://stackoverflow.com/a/74539097.
     """
 
     @staticmethod
