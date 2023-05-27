@@ -24,4 +24,4 @@ jobs:
           python-version-file: ".python-version"
           cache: 'poetry'
       - run: poetry install --with dev
-      - run: ${{ matrix.check-command }}
+      - run: poetry run ${{ matrix.check-command }}
