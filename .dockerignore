@@ -3,7 +3,7 @@
 
 # Allow files and directories
 !dht_torznab/
-!poetry.lock
+!poetry.*
 !pyproject.toml
 !gunicorn.conf.py
 
