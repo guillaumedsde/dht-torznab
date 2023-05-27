@@ -2,7 +2,7 @@ import asyncio
 import binascii
 import json
 import re
-from typing import Any
+from typing import Any, cast
 
 import greenstalk
 from sqlalchemy import Function, func
@@ -23,7 +23,8 @@ def _build_pgsql_search_vector(torrent_name: str) -> Function[Any]:
 
 async def _insert_torrent(session: AsyncSession, torrent: dict[str, Any]) -> int:
     torrent_insert_statement = (
-        insert(models.TorrentsModel)
+        # NOTE: it seems the insert function from SQLA's PGSQL dialect is not typed
+        insert(models.TorrentsModel)  # type: ignore[no-untyped-call]
         .values(
             name=torrent["name"],
             info_hash=binascii.unhexlify(torrent["infoHash"]),
@@ -37,7 +38,8 @@ async def _insert_torrent(session: AsyncSession, torrent: dict[str, Any]) -> int
     )
     result = await session.execute(torrent_insert_statement)
 
-    return result.one().id
+    # NOTE: we know our result is an int since we requested it with returning()
+    return cast(int, result.one().id)
 
 
 async def _insert_files(
@@ -46,7 +48,8 @@ async def _insert_files(
     files: list[dict[str, Any]],
 ) -> None:
     await session.execute(
-        insert(models.FilesModel),
+        # NOTE: it seems the insert function from SQLA's PGSQL dialect is not typed
+        insert(models.FilesModel),  # type: ignore[no-untyped-call]
         [
             {
                 "path": file["path"],
