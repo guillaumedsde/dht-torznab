@@ -1,4 +1,4 @@
-# syntax=docker.io/docker/dockerfile:1.2
+# syntax=docker.io/docker/dockerfile:1.5
 ARG PYTHON_VERSION=3.11
 
 FROM cgr.dev/chainguard/python:${PYTHON_VERSION}-dev as build
@@ -23,16 +23,18 @@ ARG POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=true
 RUN poetry install --sync --no-root --only main \
     && rm -rf .venv/pyvenv.cfg .venv/src .venv/.gitignore
 
-FROM cgr.dev/chainguard/python:${PYTHON_VERSION} as base
+FROM cgr.dev/chainguard/python:${PYTHON_VERSION}-dev as base
 
 WORKDIR /app
 
-COPY --from=build --chown=nonroot:nonroot /app/.venv /app/.venv
+COPY --chown=nonroot:nonroot --from=build  /app/.venv /app/.venv
 COPY --chown=nonroot:nonroot dht_torznab dht_torznab
 COPY --chown=nonroot:nonroot gunicorn.conf.py gunicorn.conf.py
 
+# TODO: figure out why adding PYTHONPATH is necessary
 ENV PYTHONUNBUFFERED=1 \
-    PATH="/app/.venv/bin:$PATH"
+    PATH="/app/.venv/bin:$PATH" \
+    PYTHONPATH="/app/.venv/lib/python3.11/site-packages"
 
 ENTRYPOINT [ "python" ]
 
