@@ -1,5 +1,7 @@
 import asyncio
+import logging
 import socket
+import sys
 from datetime import timedelta
 
 import sqlalchemy.exc
@@ -22,6 +24,9 @@ SLEEP_WHEN_NO_RESULT = timedelta(seconds=30)
 PARALLEL_WORKERS = 200
 
 
+logger = logging.getLogger(__name__)
+
+
 async def _bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
     udp = UDPServer()
     udp.run("0.0.0.0", 12346, loop=loop)
@@ -41,7 +46,10 @@ async def _bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
         except socket.gaierror:
             continue
 
-    print(f"Bootrapping DHT node using the following hosts: {bootstrap_nodes_with_ip}")
+    logger.info(
+        "Bootrapping DHT node using the following hosts %s",
+        bootstrap_nodes_with_ip,
+    )
     await dht.bootstrap(bootstrap_nodes_with_ip)
 
     return dht
@@ -76,7 +84,7 @@ async def _update_one_torrent_peer_count(
 
         peer_count = len(peers)
 
-        print(torrent_id, info_hash, peer_count)
+        logger.info("torrent_id: %d peer_count: %d", torrent_id, peer_count)
 
         update_statement = (
             update(models.TorrentsModel)
@@ -107,6 +115,8 @@ async def _main(loop: asyncio.AbstractEventLoop) -> None:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+
     loop = asyncio.get_event_loop()
     loop.run_until_complete(_main(loop))
     loop.run_forever()

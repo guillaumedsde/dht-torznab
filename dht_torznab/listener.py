@@ -1,7 +1,9 @@
 import asyncio
 import binascii
 import json
+import logging
 import re
+import sys
 from typing import Any, cast
 
 import greenstalk
@@ -12,6 +14,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from dht_torznab import db, models, settings
 
 TOKEN_SEPERATOR_REGEX = re.compile(r"\W+")
+
+
+logger = logging.getLogger(__name__)
 
 
 # FIXME: generate this natively in PG?
@@ -75,7 +80,7 @@ async def _process_job(client: greenstalk.Client) -> None:
     # TODO pydantic validation?
     torrent = json.loads(job.body)
 
-    print(torrent)
+    logger.info(torrent)
 
     await _insert_torrent_in_db(torrent)
 
@@ -85,7 +90,7 @@ async def _process_job(client: greenstalk.Client) -> None:
 async def _main() -> None:
     url = settings.get_settings().BEANSTALKD_URL
 
-    print(f"Listening to {url}")
+    logger.info("Listening to %s", url)
     tube = url.path.lstrip("/") if url.path else greenstalk.DEFAULT_TUBE
 
     with greenstalk.Client(
@@ -99,4 +104,5 @@ async def _main() -> None:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(_main())
