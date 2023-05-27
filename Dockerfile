@@ -1,4 +1,4 @@
-FROM docker.io/python:3.9-slim-bullseye AS build
+FROM docker.io/python:3.11-slim-bullseye AS build
 
 # NOTE: we use a special cache mount for the pip cache
 # hadolint ignore=DL3042
@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.cache \
     poetry install --sync --no-root --only main
 
 
-FROM docker.io/python:3.9-slim-bullseye
+FROM docker.io/python:3.11-slim-bullseye
 
 USER 1000
 
