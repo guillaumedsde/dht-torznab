@@ -1,4 +1,6 @@
-FROM cgr.dev/chainguard/python:3.11-dev as build
+ARG PYTHON_VERSION=3.11
+
+FROM cgr.dev/chainguard/python:${PYTHON_VERSION}-dev as build
 
 WORKDIR /app
 
@@ -17,7 +19,7 @@ ARG POETRY_VIRTUALENVS_OPTIONS_NO_PIP=true
 RUN poetry install --sync --no-root --only main \
     && rm -rf .venv/pyvenv.cfg .venv/src .venv/.gitignore
 
-FROM cgr.dev/chainguard/python:3.11
+FROM cgr.dev/chainguard/python:${PYTHON_VERSION} as base
 
 WORKDIR /app
 
@@ -30,4 +32,14 @@ ENV PYTHONUNBUFFERED=1 \
 
 ENTRYPOINT [ "python" ]
 
+FROM base as listener
+
 CMD [ "-m", "dht_torznab.listener" ]
+
+FROM base as peer_count_updater
+
+CMD [ "-m", "dht_torznab.peer_count_updater" ]
+
+FROM base as api
+
+ENTRYPOINT [ "gunicorn" ]

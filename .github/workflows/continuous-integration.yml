@@ -56,6 +56,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
+          # TODO: build other targets?
+          target: api
           # NOTE: see https://docs.docker.com/build/cache/backends/gha/#scope
           cache-from: |
             type=gha,scope=${{ github.ref_name }}
