@@ -13,6 +13,7 @@ class TorrentSchema(pydantic.BaseModel):
     info_hash: bytes
     file_count: int = pydantic.Field(..., gt=0)
     size: int = pydantic.Field(..., ge=0)
+    peer_count: int | None = pydantic.Field(..., ge=0)
 
     @property
     def str_info_hash(self) -> str:

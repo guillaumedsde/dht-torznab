@@ -5,6 +5,7 @@ from collections.abc import Generator
 from lxml import etree as ET  # nosec # noqa: N812
 
 from dht_torznab import schemas
+from dht_torznab.api import enums
 
 NS = {
     "atom": "http://www.w3.org/2005/Atom",
@@ -26,7 +27,7 @@ def xml_root() -> ET._Element:
 def xml_channel(
     root: ET._Element,
     feed_url: str,
-    function: str,
+    function: enums.TorznabFunction,
     offset: int,
     total_count: int,
 ) -> ET._Element:
@@ -57,15 +58,12 @@ def xml_channel(
     # Description
     ET.SubElement(channel, "description").text = "API results"
 
-    # Category
-    ET.SubElement(channel, "category").text = function
-
     # Pagination info
     ET.SubElement(
         channel,
         ET.QName(NS["torznab"], "response"),
         attrib={"offset": str(offset), "total": str(total_count)},
-    ).text = function
+    ).text = function.value
 
     return channel
 
@@ -90,6 +88,9 @@ def xml_torrents(
         ET.SubElement(item, "link").text = torrent.magneturl
         ET.SubElement(item, "pubDate").text = torrent.rfc_2822_created_at
         ET.SubElement(item, "size").text = str(torrent.size)
+
+        if torrent.peer_count is not None:
+            ET.SubElement(item, "peers").text = str(torrent.peer_count)
 
         ET.SubElement(
             item,

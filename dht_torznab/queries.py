@@ -29,6 +29,7 @@ async def search_torrents(
             models.TorrentsModel.name,
             models.TorrentsModel.created_at,
             models.TorrentsModel.info_hash,
+            models.TorrentsModel.peer_count,
             func.count(models.FilesModel.torrent_id).label("file_count"),
             func.sum(models.FilesModel.size).label("size"),
         )
