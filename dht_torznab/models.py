@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 import sqlalchemy
 from sqlalchemy import TIMESTAMP, Index, func
@@ -38,7 +37,7 @@ class TorrentsModel(Base):
     info_hash: Mapped[bytes] = mapped_column()
     # TODO check constraints for these
     occurence_count: Mapped[int] = mapped_column(default=1)
-    peer_count: Mapped[Optional[int]] = mapped_column(default=None, nullable=True)
+    peer_count: Mapped[int | None] = mapped_column(default=None, nullable=True)
 
     search_vector = mapped_column(
         TSVectorType("name", regconfig=PGSQL_DICTIONARY),

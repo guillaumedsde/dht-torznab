@@ -1,6 +1,6 @@
 import pathlib
 from collections.abc import Generator
-from typing import Annotated, Optional
+from typing import Annotated
 
 import fastapi
 from fastapi import Query, Request, Response
@@ -45,7 +45,7 @@ def _build_xml(
     )
 
 
-async def _search(query: Optional[str], limit: int, offset: int, url: URL) -> Response:
+async def _search(query: str | None, limit: int, offset: int, url: URL) -> Response:
     torrent_rows_generator, torrent_count = await queries.search_torrents(
         query,
         limit,
@@ -65,7 +65,7 @@ async def _capabilities() -> FileResponse:
 async def torznab_endpoint(
     request: Request,
     function: Annotated[enums.TorznabFunction, Query(alias="t")],
-    query: Annotated[Optional[str], Query(alias="q")] = None,
+    query: Annotated[str | None, Query(alias="q")] = None,
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[
         int,

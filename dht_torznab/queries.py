@@ -1,6 +1,5 @@
 import asyncio
 from collections.abc import Generator
-from typing import Optional
 
 import pydantic
 from sqlalchemy import func, select
@@ -10,9 +9,9 @@ from dht_torznab.settings import get_settings
 
 
 async def search_torrents(
-    search_query: Optional[str] = None,
-    limit: Optional[int] = None,
-    offset: Optional[int] = None,
+    search_query: str | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> tuple[Generator[schemas.TorrentSchema, None, None], int]:
     """Search for torrent, with optional query string and limit/offset.
 
