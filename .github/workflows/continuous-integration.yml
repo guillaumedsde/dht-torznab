@@ -1,0 +1,36 @@
+name: GitHub Actions Demo
+on:
+  - push
+
+jobs:
+  mypy:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version-file: ".python-version"
+          cache: 'poetry'
+      - run: mypy
+  # TODO DRY
+  ruff:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version-file: ".python-version"
+          cache: 'poetry'
+      - run: ruff check .
+        env:
+          RUFF_FORMAT: github
+  black:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: psf/black@stable
+        with:
+          src: "."
+          version: "23.3.0"
+
+
