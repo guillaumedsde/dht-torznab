@@ -69,7 +69,7 @@ services:
       target: listener
     depends_on:
       create-ddl:
-        condition: serviyce_completed_successfully
+        condition: service_completed_successfully
     environment:
       DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:torznab@postgres/"
       DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
