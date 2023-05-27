@@ -1,4 +1,5 @@
 import enum
+from typing import Any
 
 
 class StrEnum(str, enum.Enum):
@@ -12,9 +13,10 @@ class StrEnum(str, enum.Enum):
     @staticmethod
     def _generate_next_value_(
         name: str,
-        start: int,
-        count: int,
-        last_values: list,
+        # NOTE: following parameters are required by method signature
+        start: int,  # noqa: ARG004
+        count: int,  # noqa: ARG004
+        last_values: list[Any],  # noqa: ARG004
     ) -> str:
         return name.lower()
 

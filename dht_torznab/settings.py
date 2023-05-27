@@ -46,4 +46,9 @@ class Settings(pydantic.BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
+    """Retrieve cached instance of pydantic settings object.
+
+    Returns:
+        pydantic settings object
+    """
     return Settings()

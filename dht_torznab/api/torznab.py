@@ -16,8 +16,7 @@ def xml_root() -> ET._Element:
     """Generate the XML root elements for the RSS response.
 
     Returns:
-    -------
-        ET._Element: Root XML elements
+        Root XML element
     """
     ET.register_namespace("atom", NS["atom"])
     ET.register_namespace("torznab", NS["torznab"])
@@ -31,6 +30,18 @@ def xml_channel(
     offset: int,
     total_count: int,
 ) -> ET._Element:
+    """Create XML RSS channel with metadata (elements not populated).
+
+    Args:
+        root: Root XML element.
+        feed_url: URL for the current feed.
+        function: Current torznab function called.
+        offset: Number of elements skipped.
+        total_count: Total number of elements.
+
+    Returns:
+        Returns the empty RSS channel.
+    """
     channel = ET.SubElement(root, "channel")
 
     # Link
@@ -63,6 +74,12 @@ def xml_torrents(
     channel: ET._Element,
     torrents: Generator[schemas.TorrentSchema, None, None],
 ) -> None:
+    """Add torrents to the given XML RSS channel.
+
+    Args:
+        channel: XML RSS channel.
+        torrents: Generator of pydantic schemas for torrents.
+    """
     for torrent in torrents:
         item = ET.SubElement(channel, "item")
 

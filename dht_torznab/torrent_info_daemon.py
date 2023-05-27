@@ -22,7 +22,7 @@ SLEEP_WHEN_NO_RESULT = timedelta(seconds=30)
 PARALLEL_WORKERS = 200
 
 
-async def bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
+async def _bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
     udp = UDPServer()
     udp.run("0.0.0.0", 12346, loop=loop)
 
@@ -47,7 +47,10 @@ async def bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
     return dht
 
 
-async def update_one_torrent_peer_count(dht_server: DHT, session: AsyncSession) -> None:
+async def _update_one_torrent_peer_count(
+    dht_server: DHT,
+    session: AsyncSession,
+) -> None:
     now = datetime.utcnow()
 
     async with session.begin():
@@ -90,22 +93,22 @@ async def update_one_torrent_peer_count(dht_server: DHT, session: AsyncSession) 
         await session.commit()
 
 
-async def update_torrents_peer_count(dht_server: DHT) -> None:
+async def _update_torrents_peer_count(dht_server: DHT) -> None:
     # TODO: signal handling
     while True:
         async with db.Session() as session:
-            await update_one_torrent_peer_count(dht_server, session)
+            await _update_one_torrent_peer_count(dht_server, session)
 
 
-async def main(loop: asyncio.AbstractEventLoop) -> None:
-    dht_server = await bootstrap_dht_server(loop)
+async def _main(loop: asyncio.AbstractEventLoop) -> None:
+    dht_server = await _bootstrap_dht_server(loop)
 
     await asyncio.gather(
-        *[update_torrents_peer_count(dht_server) for _ in range(PARALLEL_WORKERS)],
+        *[_update_torrents_peer_count(dht_server) for _ in range(PARALLEL_WORKERS)],
     )
 
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(loop))
+    loop.run_until_complete(_main(loop))
     loop.run_forever()

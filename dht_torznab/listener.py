@@ -15,19 +15,19 @@ TOKEN_SEPERATOR_REGEX = re.compile(r"\W+")
 
 
 # FIXME: generate this natively in PG?
-def build_pgsql_search_vector(torrent_name: str) -> Function[Any]:
+def _build_pgsql_search_vector(torrent_name: str) -> Function[Any]:
     token_list = TOKEN_SEPERATOR_REGEX.split(torrent_name)
 
     return func.to_tsvector(models.PGSQL_DICTIONARY, " ".join(token_list))
 
 
-async def insert_torrent(session: AsyncSession, torrent: dict[str, Any]) -> int:
+async def _insert_torrent(session: AsyncSession, torrent: dict[str, Any]) -> int:
     torrent_insert_statement = (
         insert(models.TorrentsModel)
         .values(
             name=torrent["name"],
             info_hash=binascii.unhexlify(torrent["infoHash"]),
-            search_vector=build_pgsql_search_vector(torrent["name"]),
+            search_vector=_build_pgsql_search_vector(torrent["name"]),
         )
         .on_conflict_do_update(
             constraint=models.UNIQUE_INFO_HASH_CONSTRAINT_NAME,
@@ -40,7 +40,7 @@ async def insert_torrent(session: AsyncSession, torrent: dict[str, Any]) -> int:
     return result.one().id
 
 
-async def insert_files(
+async def _insert_files(
     session: AsyncSession,
     torrent_id: int,
     files: list[dict[str, Any]],
@@ -58,28 +58,28 @@ async def insert_files(
     )
 
 
-async def insert_torrent_in_db(torrent: dict[str, Any]) -> None:
+async def _insert_torrent_in_db(torrent: dict[str, Any]) -> None:
     async with db.Session.begin() as session:
-        torrent_id = await insert_torrent(session, torrent)
+        torrent_id = await _insert_torrent(session, torrent)
 
-        await insert_files(session, torrent_id, torrent["files"])
+        await _insert_files(session, torrent_id, torrent["files"])
 
         await session.commit()
 
 
-async def process_job(client: greenstalk.Client) -> None:
+async def _process_job(client: greenstalk.Client) -> None:
     job = client.reserve()
     # TODO pydantic validation?
     torrent = json.loads(job.body)
 
     print(torrent)
 
-    await insert_torrent_in_db(torrent)
+    await _insert_torrent_in_db(torrent)
 
     client.delete(job)
 
 
-async def main() -> None:
+async def _main() -> None:
     url = settings.get_settings().BEANSTALKD_URL
 
     print(f"Listening to {url}")
@@ -92,8 +92,8 @@ async def main() -> None:
     ) as client:
         # TODO signal handling
         while True:
-            await process_job(client)
+            await _process_job(client)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(_main())

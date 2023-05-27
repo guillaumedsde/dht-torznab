@@ -14,6 +14,16 @@ async def search_torrents(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
 ) -> tuple[Generator[schemas.TorrentSchema, None, None], int]:
+    """Search for torrent, with optional query string and limit/offset.
+
+    Args:
+        search_query: string for searching torrent by name.
+        limit: Number of results to return.
+        offset: Number of results to skip in results.
+
+    Returns:
+        Generator of pydantic schemas for torrent results.
+    """
     statement = (
         select(
             models.TorrentsModel.id,

@@ -45,7 +45,7 @@ def _build_xml(
     )
 
 
-async def search(query: Optional[str], limit: int, offset: int, url: URL) -> Response:
+async def _search(query: Optional[str], limit: int, offset: int, url: URL) -> Response:
     torrent_rows_generator, torrent_count = await queries.search_torrents(
         query,
         limit,
@@ -56,15 +56,15 @@ async def search(query: Optional[str], limit: int, offset: int, url: URL) -> Res
     return Response(content=xml_bytes, media_type="application/xml")
 
 
-async def capabilities() -> FileResponse:
+async def _capabilities() -> FileResponse:
     capabilities_xml_path = pathlib.Path(*static.__path__) / "capabilities.xml"
     return FileResponse(path=capabilities_xml_path)
 
 
 @router.get("")
 async def torznab_endpoint(
-    function: Annotated[enums.TorznabFunction, Query(alias="t")],
     request: Request,
+    function: Annotated[enums.TorznabFunction, Query(alias="t")],
     query: Annotated[Optional[str], Query(alias="q")] = None,
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[
@@ -72,8 +72,27 @@ async def torznab_endpoint(
         Query(gt=1, lte=MAX_PAGE_SIZE),
     ] = MAX_PAGE_SIZE,
 ) -> Response:
+    """Unique Torznab endpoint.
+
+    Args:
+        request: FastAPI request object to access URL.
+        function: Torznab function to run.
+        query: String to query torrent name.
+        offset:  Number of items to skip in the result.
+        limit: Number of results to return.
+
+    Notes:
+        See here for detailed specification: https://torznab.github.io/spec-1.3-draft/index.html
+
+
+    Raises:
+        fastapi.HTTPException: When requesting unimplemented torznab functions
+
+    Returns:
+        Torznab FastAPi response
+    """
     if function == enums.TorznabFunction.CAPS:
-        return await capabilities()
+        return await _capabilities()
     if function == enums.TorznabFunction.SEARCH:
-        return await search(query, limit, offset, request.url)
+        return await _search(query, limit, offset, request.url)
     raise fastapi.HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED)
