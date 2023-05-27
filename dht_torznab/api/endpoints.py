@@ -19,7 +19,7 @@ router = fastapi.APIRouter()
 MAX_PAGE_SIZE = get_settings().API.MAX_PAGE_SIZE
 
 
-# TODO build this async
+# TODO: build this async
 def _build_xml(
     torrents: Generator[schemas.TorrentSchema, None, None],
     offset: int,

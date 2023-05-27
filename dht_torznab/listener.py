@@ -19,7 +19,7 @@ TOKEN_SEPERATOR_REGEX = re.compile(r"\W+")
 logger = logging.getLogger(__name__)
 
 
-# FIXME: generate this natively in PG?
+# TODO: generate this natively in PG?
 def _build_pgsql_search_vector(torrent_name: str) -> Function[Any]:
     token_list = TOKEN_SEPERATOR_REGEX.split(torrent_name)
 
@@ -77,7 +77,7 @@ async def _insert_torrent_in_db(torrent: dict[str, Any]) -> None:
 
 async def _process_job(client: greenstalk.Client) -> None:
     job = client.reserve()
-    # TODO pydantic validation?
+    # TODO: pydantic validation?
     torrent = json.loads(job.body)
 
     logger.info(torrent)
@@ -98,7 +98,7 @@ async def _main() -> None:
         use=tube,
         watch=tube,
     ) as client:
-        # TODO signal handling
+        # TODO: signal handling
         while True:
             await _process_job(client)
 

@@ -29,7 +29,9 @@ logger = logging.getLogger(__name__)
 
 async def _bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
     udp = UDPServer()
-    udp.run("0.0.0.0", 12346, loop=loop)
+    # TODO: investigate whether binding to all interfaces is necessary
+    # TODO: handle IPv6?
+    udp.run("0.0.0.0", 12346, loop=loop)  # noqa: S104
 
     dht = DHT(
         int("0x54A10C9B159FC0FBBF6A39029BCEF406904019E0", 16),
@@ -42,7 +44,7 @@ async def _bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
     for host, port in BOOTSTRAP_NODES:
         try:
             bootstrap_nodes_with_ip.append((socket.gethostbyname(host), port))
-        # FIXME: log this
+        # TODO: log this
         except socket.gaierror:
             continue
 

@@ -21,8 +21,8 @@ class Base(DeclarativeBase):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         server_default=func.now(),
-        # FIXME: this does not seem to do anything?
-        # FIXME: typing
+        # TODO: this does not seem to do anything?
+        # TODO: typing
         server_onupdate=func.now(),  # type: ignore[arg-type]
     )
 
@@ -35,7 +35,7 @@ PGSQL_DICTIONARY = "pg_catalog.simple"
 class TorrentsModel(Base):
     name: Mapped[str]
     info_hash: Mapped[bytes] = mapped_column()
-    # TODO check constraints for these
+    # TODO: check constraints for these
     occurence_count: Mapped[int] = mapped_column(default=1)
     peer_count: Mapped[int | None] = mapped_column(default=None, nullable=True)
 
