@@ -1,0 +1,105 @@
+services:
+
+  magneticod:
+    build:
+      context: https://github.com/boramalper/magnetico.git#master
+      dockerfile: Dockerfile.magneticod
+    depends_on:
+      - beanstalkd
+    command:
+      - --database=beanstalkd://beanstalkd:11300/magneticod_tube
+      - --verbose
+      - --leech-max-n=500
+      - --indexer-interval=1
+      - --indexer-max-neighbors=10000
+
+  beanstalkd:
+    image: guillaumedsde/beanstalkd-distroless:1.13
+    command:
+      - -b
+      - /data
+      - -V
+      - -f
+      - "2400000"
+      - -z
+      - "10000000"
+    volumes:
+      - type: volume
+        source: beanstalkd-binlog
+        target: /data
+    ports:
+      - target: 11300
+        published: 11300
+        protocol: tcp
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+    environment:
+      POSTGRES_USER: torznab
+      POSTGRES_PASSWORD: torznab
+      POSTGRES_DB: torznab
+    volumes:
+      - type: volume
+        source: pg-data
+        target: /var/lib/postgresql/data
+    command:
+      - "postgres"
+      - "-c"
+      - "log_min_duration_statement=0"
+      - "-c"
+      - "max_connections=500"
+
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"
+      start_period: 5s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  listener:
+    build:
+      context: .
+    depends_on:
+      create-ddl:
+        condition: service_completed_successfully
+    environment:
+      &common-env-vars
+      DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:torznab@postgres/"
+      DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
+
+  create-ddl:
+    build:
+      context: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: *common-env-vars
+    command:
+      - "-m"
+      - "dht_torznab.create_ddl"
+
+  # FIXME DRY
+  api:
+    build:
+      context: .
+    depends_on:
+      create-ddl:
+        condition: service_completed_successfully
+    environment: *common-env-vars
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+    command:
+      - "-m"
+      - "gunicorn"
+
+volumes:
+  pg-data:
+  beanstalkd-binlog:
