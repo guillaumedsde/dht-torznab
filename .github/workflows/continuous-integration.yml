@@ -12,6 +12,7 @@ jobs:
             check-command: ruff check --format github .
           - check-name: black
             check-command: black --check .
+          # TODO: configure mypy cache
           - check-name: mypy
             check-command: mypy
     name: ${{ matrix.check-name }}
@@ -25,3 +26,41 @@ jobs:
           cache: 'poetry'
       - run: poetry install --with dev
       - run: poetry run ${{ matrix.check-command }}
+  docker:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        if: github.ref == '${{ github.event.repository.default_branch }}'
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+      - name: Build and Push
+        if: github.ref == '${{ github.event.repository.default_branch }}'
+        uses: docker/build-push-action@v4
+        with:
+          push: ${{ github.ref == github.event.repository.default_branch }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
+          # TODO: build other targets?
+          target: api
+          # NOTE: see https://docs.docker.com/build/cache/backends/gha/#scope
+          cache-from: |
+            type=gha,scope=${{ github.ref_name }}
+            type=gha,scope=${{ github.base_ref }}
+            type=gha,scope=${{ github.event.repository.default_branch }}
+          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}

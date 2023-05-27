@@ -63,42 +63,42 @@ services:
       retries: 5
 
   listener:
+    &common-dht-torznab
     build:
       context: .
+      target: listener
     depends_on:
       create-ddl:
         condition: service_completed_successfully
     environment:
-      &common-env-vars
       DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:torznab@postgres/"
       DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
 
   create-ddl:
-    build:
-      context: .
+    <<: *common-dht-torznab
     depends_on:
       postgres:
         condition: service_healthy
-    environment: *common-env-vars
     command:
       - "-m"
       - "dht_torznab.create_ddl"
 
-  # FIXME DRY
   api:
+    <<: *common-dht-torznab
     build:
       context: .
-    depends_on:
-      create-ddl:
-        condition: service_completed_successfully
-    environment: *common-env-vars
+      target: api
     ports:
       - target: 8080
         published: 8080
         protocol: tcp
-    command:
-      - "-m"
-      - "gunicorn"
+
+  # FIXME DRY
+  peer_count_updater:
+    <<: *common-dht-torznab
+    build:
+      context: .
+      target: peer_count_updater
 
 volumes:
   pg-data:
