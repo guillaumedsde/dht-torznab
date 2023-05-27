@@ -11,9 +11,9 @@ jobs:
           - check-name: ruff
             check-command: ruff check --format github .
           - check-name: black
-            check-command: black .
+            check-command: black --check .
           - check-name: mypy
-            check-command: mypy .
+            check-command: mypy
     name: ${{ matrix.check-name }}
     runs-on: ubuntu-22.04
     steps:
