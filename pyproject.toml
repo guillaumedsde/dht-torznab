@@ -49,6 +49,10 @@ ignore = [
     "D213",
     # Missing type annotation for `self` in method
     "ANN101",
+    # Missing author in TODO
+    "TD002",
+    # Missing issue link on the line following this TODO
+    "TD003",
 ]
 
 src = ["dht_torznab"]
