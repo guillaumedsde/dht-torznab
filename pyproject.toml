@@ -17,7 +17,7 @@ fastapi = "0.95.2"
 uvicorn = { version = "0.22.0", extras = ["standard"] }
 lxml = "4.9.2"
 gunicorn = "20.1.0"
-aio-btdht = "0.0.9"
+aio-btdht = { git = "https://github.com/bashkirtsevich-llc/aiobtdht.git", rev = "b98249b56514b59db1f49d981494da1bfd9a9ae3" }
 
 
 [tool.poetry.group.dev.dependencies]
