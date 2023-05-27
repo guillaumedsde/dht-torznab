@@ -1,6 +1,6 @@
 import asyncio
 import socket
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import sqlalchemy.exc
 from aiobtdht import DHT
@@ -51,8 +51,6 @@ async def _update_one_torrent_peer_count(
     dht_server: DHT,
     session: AsyncSession,
 ) -> None:
-    now = datetime.utcnow()
-
     async with session.begin():
         select_statement = (
             select(
@@ -62,7 +60,7 @@ async def _update_one_torrent_peer_count(
             .with_for_update(skip_locked=True)
             .where(
                 models.TorrentsModel.peer_count.is_(None)
-                | (models.TorrentsModel.updated_at < (now - TD)),
+                | (models.TorrentsModel.updated_at < (func.now() - TD)),
             )
             .order_by(models.TorrentsModel.updated_at.asc())
             .limit(1)
