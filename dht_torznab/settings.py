@@ -16,6 +16,13 @@ class APISettings(pydantic.BaseModel):
             "PGSQL search results will not be displayed by the torznab API."
         ),
     )
+    KEY: pydantic.SecretStr = pydantic.Field(
+        pydantic.parse_obj_as(
+            pydantic.SecretStr,
+            "averysecretapikey",
+        ),
+        description="Key for authenticating against the torznab API.",
+    )
 
 
 class Settings(pydantic.BaseSettings):

@@ -3,6 +3,7 @@ from collections.abc import Generator
 from typing import Annotated
 
 import fastapi
+import fastapi.security
 from fastapi import Query, Request, Response
 from fastapi.responses import FileResponse
 from lxml import etree as ET  # nosec # noqa: N812

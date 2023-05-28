@@ -1,9 +1,10 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
 from dht_torznab.api import endpoints
+from dht_torznab.api.security import verify_api_key
 
-app = FastAPI()
+app = FastAPI(dependencies=[Depends(verify_api_key)])
 
 app.include_router(endpoints.router, prefix="/torznab")
 
