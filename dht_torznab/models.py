@@ -1,21 +1,36 @@
 from datetime import datetime
 
 import sqlalchemy
-from sqlalchemy import TIMESTAMP, Index, func
+from sqlalchemy import TIMESTAMP, Index, MetaData, event, func
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
     mapped_column,
     relationship,
 )
-from sqlalchemy.schema import ForeignKey, UniqueConstraint
+from sqlalchemy.schema import CreateSchema, ForeignKey, UniqueConstraint
 from sqlalchemy_utils import TSVectorType
+
+from dht_torznab.settings import get_settings
+
+SCHEMA_NAME = get_settings().PGSQL_SCHEMA_NAME
+
+
+metadata = MetaData(schema=SCHEMA_NAME)
+
+# NOTE: ignore typing until SQLA type hint this API
+event.listen(
+    metadata,
+    "before_create",
+    CreateSchema(SCHEMA_NAME),  # type: ignore[no-untyped-call]
+)
 
 
 class Base(DeclarativeBase):
     type_annotation_map = {
         datetime: TIMESTAMP(timezone=True),
     }
+    metadata = metadata
 
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

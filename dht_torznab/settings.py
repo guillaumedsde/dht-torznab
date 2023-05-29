@@ -33,6 +33,10 @@ class Settings(pydantic.BaseSettings):
         ),
         description="PostgreSQL connection URL",
     )
+    PGSQL_SCHEMA_NAME: str = pydantic.Field(
+        "dht_torznab",
+        description="Name of the PGSQL schema used for creating app's tables.",
+    )
     # TODO: protocol validation?
     BEANSTALKD_URL: pydantic.AnyUrl = pydantic.Field(
         pydantic.parse_obj_as(
