@@ -1,12 +1,16 @@
 import asyncio
+import os
+import sysconfig
 from logging.config import fileConfig
+from pathlib import Path
 
-from dht_torznab import models
-from dht_torznab.db import engine
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
 from alembic import context
+from alembic.script import write_hooks
+from dht_torznab import models
+from dht_torznab.db import engine
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -24,6 +28,29 @@ target_metadata = models.metadata
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # ... etc.
+
+
+@write_hooks.register("ruff")
+def run_ruff(filename: str, options: list[str]) -> None:  # noqa: ARG001
+    """Ruff hook for alembic, runs ruff on newly generated migration.
+
+    Notes:
+        Gotten from https://github.com/charliermarsh/ruff/issues/659#issuecomment-1385998994
+        Once the ruff issue is resolved we should be able to remove this and simply use
+        the ruff setup_script.
+
+    Args:
+        filename: Name of the migrations file.
+        options: Additional options to pass to the ruff call.
+    """
+    ruff = Path(sysconfig.get_path("scripts")) / "ruff"
+    # NOTE: spawning process without shell is acceptable
+    #       since input string comes from configuration.
+    os.spawnv(  # noqa: S606
+        os.P_WAIT,
+        ruff,
+        [str(ruff), filename, "--fix", "--exit-zero"],
+    )
 
 
 def run_migrations_offline() -> None:
@@ -51,6 +78,11 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
+    """Executes migrations with given connection.
+
+    Args:
+        connection: for executing migrations.
+    """
     context.configure(connection=connection, target_metadata=target_metadata)
 
     if target_metadata.schema:
@@ -63,10 +95,7 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    """In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
+    """Run migrations, creates an Engine and associates a connection to context."""
     connectable = engine
 
     async with connectable.connect() as connection:

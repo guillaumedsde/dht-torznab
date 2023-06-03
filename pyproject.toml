@@ -68,6 +68,7 @@ target-version = "py311"
 "dht_torznab/settings.py" = ["D106"]
 "dht_torznab/schemas.py" = ["A003"]
 "dht_torznab/models.py" = ["A003"]
+"dht_torznab/alembic/versions/*.py" = ["D103"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
