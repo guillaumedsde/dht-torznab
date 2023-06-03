@@ -28,8 +28,9 @@ FROM cgr.dev/chainguard/python:${PYTHON_VERSION}-dev as base
 WORKDIR /app
 
 COPY --chown=nonroot:nonroot --from=build  /app/.venv /app/.venv
-COPY --chown=nonroot:nonroot dht_torznab dht_torznab
-COPY --chown=nonroot:nonroot gunicorn.conf.py gunicorn.conf.py
+COPY --chown=nonroot:nonroot dht_torznab dht_torznab 
+COPY --chown=nonroot:nonroot gunicorn.conf.py alembic.ini ./
+
 
 # TODO: figure out why adding PYTHONPATH is necessary
 ENV PYTHONUNBUFFERED=1 \
@@ -49,3 +50,8 @@ CMD [ "-m", "dht_torznab.peer_count_updater" ]
 FROM base as api
 
 ENTRYPOINT [ "gunicorn" ]
+
+FROM base as migrations
+
+ENTRYPOINT [ "alembic" ]
+CMD [ "upgrade", "head" ]

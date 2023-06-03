@@ -6,5 +6,6 @@
 !poetry.*
 !pyproject.toml
 !gunicorn.conf.py
+!alembic.ini
 
 **/__pycache__/
