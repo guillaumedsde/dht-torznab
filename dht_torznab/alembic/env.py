@@ -83,7 +83,11 @@ def do_run_migrations(connection: Connection) -> None:
     Args:
         connection: for executing migrations.
     """
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        version_table_schema=target_metadata.schema,
+    )
 
     if target_metadata.schema:
         connection.execute(
