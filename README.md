@@ -9,6 +9,7 @@
 - [x] Implement a peer count updater
   - [bashkirtsevich-llc/aiobtdht](https://github.com/bashkirtsevich-llc)
   - [nitmir/btdht](https://github.com/nitmir/btdht)
+- [x] Setup PGSQL schema for models with Alembic migrations
 - [ ] Search for torrents by name of its files
 - [ ] Torrent classifier
 - [ ] Fully featured torznab API

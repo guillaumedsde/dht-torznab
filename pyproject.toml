@@ -20,6 +20,7 @@ gunicorn = "20.1.0"
 # NOTE: install from git since pypi packages are not up to date
 aio-btdht = { git = "https://github.com/bashkirtsevich-llc/aiobtdht.git", rev = "b98249b56514b59db1f49d981494da1bfd9a9ae3" }
 aio-krpc-server = { git = "https://github.com/bashkirtsevich-llc/aiokrpc.git", rev = "fe0b18a98d4dc19034f8152afbae78fb600830e2" }
+alembic = "1.11.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "0.0.270"
@@ -67,6 +68,7 @@ target-version = "py311"
 "dht_torznab/settings.py" = ["D106"]
 "dht_torznab/schemas.py" = ["A003"]
 "dht_torznab/models.py" = ["A003"]
+"dht_torznab/alembic/versions/*.py" = ["D103"]
 
 [tool.ruff.pydocstyle]
 convention = "google"

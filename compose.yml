@@ -68,20 +68,20 @@ services:
       context: .
       target: listener
     depends_on:
-      create-ddl:
+      migrations:
         condition: service_completed_successfully
     environment:
       DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:torznab@postgres/"
       DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
 
-  create-ddl:
+  migrations:
     <<: *common-dht-torznab
+    build:
+      context: .
+      target: migrations
     depends_on:
       postgres:
         condition: service_healthy
-    command:
-      - "-m"
-      - "dht_torznab.create_ddl"
 
   api:
     <<: *common-dht-torznab
