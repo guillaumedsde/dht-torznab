@@ -3,8 +3,6 @@ from functools import lru_cache
 
 import pydantic
 
-PORT = pydantic.conint(ge=1, le=65535)
-
 
 class APISettings(pydantic.BaseModel):
     MAX_PAGE_SIZE: pydantic.PositiveInt = pydantic.Field(
@@ -37,11 +35,13 @@ class PeerCountUpdaterSettings(pydantic.BaseModel):
         "0.0.0.0",  # noqa: S104
         description="Hostname to bind the DHT's UDP server to.",
     )
-    DHT_UDP_SERVER_PORT: PORT = pydantic.Field(
+    DHT_UDP_SERVER_PORT: int = pydantic.Field(
         4747,
         description="Post to bind the DHT's UDP server to.",
+        ge=1,
+        le=65535,
     )
-    BOOTSTRAP_NODES: list[tuple[str, PORT]] = pydantic.Field(
+    BOOTSTRAP_NODES: list[tuple[str, int]] = pydantic.Field(
         [
             ("router.utorrent.com", 6881),
             ("router.bittorrent.com", 6881),
@@ -54,12 +54,13 @@ class PeerCountUpdaterSettings(pydantic.BaseModel):
             " the peer count updater's DHT node."
         ),
     )
-    ASYNCIO_COROUTINES: pydantic.conint(ge=1) = pydantic.Field(
+    ASYNCIO_COROUTINES: int = pydantic.Field(
         200,
         description=(
             "Number of coroutines running concurrently to update peer counts for"
             "torrents in the database."
         ),
+        ge=1,
     )
     SLEEP_WHEN_NO_RESULT: timedelta = pydantic.Field(
         timedelta(seconds=30),
