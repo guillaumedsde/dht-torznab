@@ -80,7 +80,7 @@ async def _process_job(client: greenstalk.Client) -> None:
     # TODO: pydantic validation?
     torrent = json.loads(job.body)
 
-    logger.info(torrent)
+    logger.info(torrent.name)
 
     await _insert_torrent_in_db(torrent)
 
