@@ -104,8 +104,8 @@ async def _update_one_torrent_peer_count(
 
 async def _update_torrents_peer_count(dht_server: DHT) -> None:
     # TODO: signal handling
-    while True:
-        async with db.Session() as session:
+    async with db.Session() as session:
+        while True:
             await _update_one_torrent_peer_count(dht_server, session)
 
 
