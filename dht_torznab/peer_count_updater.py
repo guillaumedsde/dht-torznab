@@ -2,7 +2,6 @@ import asyncio
 import logging
 import socket
 import sys
-from datetime import timedelta
 
 import sqlalchemy.exc
 from aiobtdht import DHT
@@ -11,27 +10,19 @@ from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dht_torznab import db, models
-
-BOOTSTRAP_NODES = [
-    ("router.utorrent.com", 6881),
-    ("router.bittorrent.com", 6881),
-    ("dht.transmissionbt.com", 6881),
-    ("router.bitcomet.com", 6881),
-    ("dht.aelitis.com", 6881),
-]
-TD = timedelta(minutes=5)
-SLEEP_WHEN_NO_RESULT = timedelta(seconds=30)
-PARALLEL_WORKERS = 200
-
+from dht_torznab.settings import get_settings
 
 logger = logging.getLogger(__name__)
 
 
 async def _bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
     udp = UDPServer()
-    # TODO: investigate whether binding to all interfaces is necessary
-    # TODO: handle IPv6?
-    udp.run("0.0.0.0", 12346, loop=loop)  # noqa: S104
+
+    udp.run(
+        get_settings().PEER_COUNT_UPDATER.DHT_UDP_SERVER_HOSTNAME,
+        get_settings().PEER_COUNT_UPDATER.DHT_UDP_SERVER_PORT,
+        loop=loop,
+    )
 
     dht = DHT(
         int("0x54A10C9B159FC0FBBF6A39029BCEF406904019E0", 16),
@@ -41,7 +32,7 @@ async def _bootstrap_dht_server(loop: asyncio.AbstractEventLoop) -> DHT:
 
     bootstrap_nodes_with_ip = []
 
-    for host, port in BOOTSTRAP_NODES:
+    for host, port in get_settings().PEER_COUNT_UPDATER.BOOTSTRAP_NODES:
         try:
             bootstrap_nodes_with_ip.append((socket.gethostbyname(host), port))
         # TODO: log this
@@ -70,7 +61,15 @@ async def _update_one_torrent_peer_count(
             .with_for_update(skip_locked=True)
             .where(
                 models.TorrentsModel.peer_count.is_(None)
-                | (models.TorrentsModel.updated_at < (func.now() - TD)),
+                | (
+                    models.TorrentsModel.updated_at
+                    < (
+                        func.now()
+                        - (
+                            get_settings().PEER_COUNT_UPDATER.UPDATE_TORRENT_PEER_COUNT_EVERY
+                        )
+                    )
+                ),
             )
             .order_by(models.TorrentsModel.updated_at.asc())
             .limit(1)
@@ -79,7 +78,9 @@ async def _update_one_torrent_peer_count(
         try:
             torrent_id, info_hash = result.one()
         except sqlalchemy.exc.NoResultFound:
-            await asyncio.sleep(SLEEP_WHEN_NO_RESULT.total_seconds())
+            await asyncio.sleep(
+                get_settings().PEER_COUNT_UPDATER.SLEEP_WHEN_NO_RESULT.total_seconds(),
+            )
             return
 
         peers = await dht_server[info_hash]
@@ -112,7 +113,10 @@ async def _main(loop: asyncio.AbstractEventLoop) -> None:
     dht_server = await _bootstrap_dht_server(loop)
 
     await asyncio.gather(
-        *[_update_torrents_peer_count(dht_server) for _ in range(PARALLEL_WORKERS)],
+        *[
+            _update_torrents_peer_count(dht_server)
+            for _ in range(get_settings().PEER_COUNT_UPDATER.ASYNCIO_COROUTINES)
+        ],
     )
 
 
