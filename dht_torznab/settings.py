@@ -34,7 +34,7 @@ class PeerCountUpdaterSettings(pydantic.BaseModel):
     # TODO: investigate whether binding to all interfaces is necessary
     # TODO: handle IPv6?
     DHT_UDP_SERVER_HOSTNAME: str = pydantic.Field(
-        "localhost",
+        "0.0.0.0",  # noqa: S104
         description="Hostname to bind the DHT's UDP server to.",
     )
     DHT_UDP_SERVER_PORT: PORT = pydantic.Field(
