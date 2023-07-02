@@ -1,0 +1,39 @@
+services:
+  listener:
+    &common-dht-torznab
+    image: ghcr.io/guillaumedsde/dht-torznab:latest
+    build: {}
+    command:
+      - "-m"
+      - "dht_torznab.listener"
+
+  migrations:
+    <<: *common-dht-torznab
+    # FIXME: pull appropriate image instead of defining entrypoint?
+    entrypoint:
+      - alembic
+    command:
+      - upgrade
+      - head
+    build: {}
+
+  api:
+    <<: *common-dht-torznab
+    # FIXME: pull appropriate image instead of defining entrypoint?
+    entrypoint:
+      - gunicorn
+    command: []
+    build: {}
+
+
+  # FIXME DRY
+  peer_count_updater:
+    <<: *common-dht-torznab
+    command:
+      - -m
+      - dht_torznab.peer_count_updater
+    build: {}
+
+volumes:
+  pg-data:
+  beanstalkd-binlog:
