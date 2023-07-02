@@ -3,6 +3,8 @@ services:
     &common-dht-torznab
     image: ghcr.io/guillaumedsde/dht-torznab:latest
     build: {}
+    entrypoint:
+      - python
     command:
       - "-m"
       - "dht_torznab.listener"
@@ -29,6 +31,8 @@ services:
   # FIXME DRY
   peer_count_updater:
     <<: *common-dht-torznab
+    entrypoint:
+      - python
     command:
       - -m
       - dht_torznab.peer_count_updater
