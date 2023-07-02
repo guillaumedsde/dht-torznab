@@ -24,8 +24,11 @@ services:
       # DNS_KEEP_NAMESERVER: "on"
     cap_add:
       - NET_ADMIN
+      - MKNOD
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
+    devices:
+      - /dev/net/tun:/dev/net/tun
     deploy:
       resources:
         limits:
