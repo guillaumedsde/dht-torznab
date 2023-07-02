@@ -1,17 +1,59 @@
 services:
+  gluetun:
+    image: qmcgaw/gluetun:v3.34
+    environment:
+      VPN_SERVICE_PROVIDER: mullvad
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${MULLVAD_WIREGUARD_PRIVATE_KEY}
+      WIREGUARD_ADDRESSES: ${MULLVAD_WIREGUARD_ADDRESSES}
+      # Mullvad configuration
+      # https://github.com/qdm12/gluetun/wiki/Mullvad
+      SERVER_COUNTRIES: ${MULLVAD_SERVER_COUNTRIES:-Sweden}
+      OWNED_ONLY: "yes"
+      # Allow LAN access to other containers
+      FIREWALL_OUTBOUND_SUBNETS: 172.16.0.0/12
+      # DNS Configuration 
+      # https://github.com/qdm12/gluetun/wiki/DNS-options
+      DOT: "off"
+      BLOCK_MALICIOUS: "off"
+      BLOCK_SURVEILLANCE: "off"
+      BLOCK_ADS: "off"
+      # NOTE: use docker embedded DNS
+      DNS_ADDRESS: "127.0.0.11"
+      # DNS_KEEP_NAMESERVER: "on"
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 150M
+          pids: 50
 
   magneticod:
     build:
       context: https://github.com/boramalper/magnetico.git#master
       dockerfile: Dockerfile.magneticod
     depends_on:
-      - beanstalkd
+      beanstalkd:
+        condition: service_started
+      gluetun:
+        condition: service_healthy
     command:
       - --database=beanstalkd://beanstalkd:11300/magneticod_tube
       - --verbose
       - --leech-max-n=500
       - --indexer-interval=1
       - --indexer-max-neighbors=10000
+    network_mode: service:gluetun
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 75M
+          pids: 20
 
   beanstalkd:
     image: guillaumedsde/beanstalkd-distroless:1.13
@@ -31,6 +73,12 @@ services:
       - target: 11300
         published: 11300
         protocol: tcp
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 100M
+          pids: 5
 
   postgres:
     image: postgres:15-alpine
@@ -40,7 +88,7 @@ services:
         protocol: tcp
     environment:
       POSTGRES_USER: torznab
-      POSTGRES_PASSWORD: torznab
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-torznab}
       POSTGRES_DB: torznab
     volumes:
       - type: volume
@@ -52,7 +100,12 @@ services:
       - "log_min_duration_statement=0"
       - "-c"
       - "max_connections=500"
-
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 750M
+          pids: 400
     healthcheck:
       test:
         - "CMD-SHELL"
@@ -71,8 +124,14 @@ services:
       migrations:
         condition: service_completed_successfully
     environment:
-      DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:torznab@postgres/"
+      DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:${POSTGRES_PASSWORD:-torznab}@postgres/"
       DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 150M
+          pids: 5
 
   migrations:
     <<: *common-dht-torznab
@@ -82,6 +141,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 150M
+          pids: 5
 
   api:
     <<: *common-dht-torznab
@@ -92,6 +157,12 @@ services:
       - target: 8080
         published: 8080
         protocol: tcp
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 750M
+          pids: 20
 
   # FIXME DRY
   peer_count_updater:
@@ -99,6 +170,18 @@ services:
     build:
       context: .
       target: peer_count_updater
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      gluetun:
+        condition: service_healthy
+    network_mode: service:gluetun
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 200M
+          pids: 20
 
 volumes:
   pg-data:
