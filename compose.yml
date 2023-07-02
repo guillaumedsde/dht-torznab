@@ -19,6 +19,7 @@ services:
       BLOCK_SURVEILLANCE: "off"
       BLOCK_ADS: "off"
       # NOTE: use docker embedded DNS
+      # WARNING: THIS IS A DNS LEAK
       DNS_ADDRESS: "127.0.0.11"
       # DNS_KEEP_NAMESERVER: "on"
     cap_add:
