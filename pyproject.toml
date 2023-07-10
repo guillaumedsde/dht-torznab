@@ -9,7 +9,7 @@ packages = [{ include = "dht_torznab" }]
 [tool.poetry.dependencies]
 python = "^3.11"
 greenstalk = "2.0.0"
-sqlalchemy = { version = "2.0.15", extras = ["asyncio"] }
+sqlalchemy = { version = "2.0.18", extras = ["asyncio"] }
 asyncpg = "0.27.0"
 pydantic = "1.10.8"
 sqlalchemy-utils = "0.41.1"
