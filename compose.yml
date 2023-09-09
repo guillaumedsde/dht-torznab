@@ -1,6 +1,10 @@
 services:
   gluetun:
-    image: qmcgaw/gluetun:v3.34
+    image: docker.io/qmcgaw/gluetun@sha256:8eb8499c778e7b13ef5b23278e80390264cbeda8bfcc3d8b21fc07e0710f2fbb
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+      - 127.0.0.11
     environment:
       VPN_SERVICE_PROVIDER: protonvpn
       VPN_TYPE: openvpn
@@ -9,23 +13,11 @@ services:
       SERVER_HOSTNAMES: node-ch-05.protonvpn.net,node-ch-06.protonvpn.net,node-ch-07.protonvpn.net,node-ch-08.protonvpn.net
       # Allow LAN access to other containers
       FIREWALL_OUTBOUND_SUBNETS: 172.16.0.0/12
-      # DNS Configuration 
-      # https://github.com/qdm12/gluetun/wiki/DNS-options
-      DOT: "off"
-      BLOCK_MALICIOUS: "off"
-      BLOCK_SURVEILLANCE: "off"
-      BLOCK_ADS: "off"
-      # NOTE: use docker embedded DNS
-      # WARNING: THIS IS A DNS LEAK
-      DNS_ADDRESS: "127.0.0.11"
-      # DNS_KEEP_NAMESERVER: "on"
+      DNS_KEEP_NAMESERVER: "on"
     cap_add:
       - NET_ADMIN
-      - MKNOD
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
-    devices:
-      - /dev/net/tun:/dev/net/tun
     deploy:
       resources:
         limits:
