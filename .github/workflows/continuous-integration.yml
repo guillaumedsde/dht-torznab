@@ -22,7 +22,7 @@ jobs:
       - run: pip install poetry==1.5.0
       - uses: actions/setup-python@v4
         with:
-          python-version-file: ".python-version"
+          python-version-file: "pyproject.toml"
           cache: 'poetry'
       - run: poetry install --with dev
       - run: poetry run ${{ matrix.check-command }}
