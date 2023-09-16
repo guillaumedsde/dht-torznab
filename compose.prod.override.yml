@@ -42,7 +42,7 @@ services:
   # reverse proxy
   traefik:
     image: traefik:v2.10
-    user: ${UID:-1000}:${GID:-1000}
+    user: ${UID:-1000}:${DOCKER_GID:-999}
     cap_add:
       - NET_BIND_SERVICE
     command:
