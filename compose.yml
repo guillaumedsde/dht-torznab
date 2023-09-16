@@ -20,6 +20,8 @@ services:
       VERSION_INFORMATION: "off"
     cap_add:
       - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
     deploy:
       resources:
         limits:
