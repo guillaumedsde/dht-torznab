@@ -1,13 +1,13 @@
 # syntax=docker.io/docker/dockerfile:1.5
 ARG PYTHON_VERSION=3.11
 
-FROM cgr.dev/chainguard/python:${PYTHON_VERSION}-dev as build
+FROM docker.io/python:${PYTHON_VERSION}-slim-bookworm as build
 
 WORKDIR /app
 
 # NOTE: we use a special cache mount for the pip cache
 # hadolint ignore=DL3042
-RUN --mount=type=cache,target=/home/nonroot/.cache,id=poetry-install \
+RUN --mount=type=cache,target=/home/nonroot/.cache,id=pip-cache-poetry-install \
     pip install "poetry==1.4.2"
 
 COPY --chown=nonroot:nonroot pyproject.toml poetry.* ./
@@ -20,10 +20,11 @@ ARG POETRY_VIRTUALENVS_OPTIONS_NO_PIP=true
 ARG POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=true
 
 # FIXME: figure out why cache is not working
-RUN poetry install --sync --no-root --only main \
+RUN --mount=type=cache,target=/home/nonroot/.cache,id=poetry-install \
+    poetry install --sync --no-root --only main \
     && rm -rf .venv/pyvenv.cfg .venv/src .venv/.gitignore
 
-FROM cgr.dev/chainguard/python:${PYTHON_VERSION}-dev as base
+FROM docker.io/python:${PYTHON_VERSION}-slim-bookworm as base
 
 WORKDIR /app
 
