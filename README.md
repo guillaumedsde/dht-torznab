@@ -1,4 +1,27 @@
-## DHT-Torznab
+# 🐛 DHT-Torznab
+
+This Project is an attempt to expose torrents crawled with [magnetico](https://github.com/boramalper/magnetico) through a torznab compatible API.
+
+## ⚙️ Services
+
+This project is compose of mutiple services
+- A [magneticod](https://github.com/boramalper/magnetico) torrent crawler
+- A [beanstalkd](https://beanstalkd.github.io/) work queue for handling crawled torrent information
+- A listener service for listening to the beanstalkd work queue and storing crawled torrents in a database
+- A peer count updater service for retrieving up to date torrent peer counts
+- A [PostgreSQL](https://www.postgresql.org/) database for storing and searching torrent information
+- A [FastAPI](https://fastapi.tiangolo.com/) API for serving torrent information 
+
+
+## 🧪 Development
+
+### 🚀 Launching the development stack
+
+You can launch the full stack locally using:
+
+```bash
+docker compose up
+```
 
 ## 🔮 Roadmap
 
@@ -14,3 +37,7 @@
 - [ ] Torrent classifier
 - [ ] Fully featured torznab API
 - [ ] Users and credentials
+
+## License
+
+See [LICENSE.md](LICENSE.md)
