@@ -35,7 +35,7 @@ services:
     build: {}
     ports: []
     environment:
-      DHT_TORZNAB__API__KEY: ${DHT_TORZNAB__API__KEY}
+      API__KEY: ${API__KEY}
     labels:
       traefik.enable: "true"
       traefik.http.routers.api.rule: "Host(`api.${DOMAIN}`)"

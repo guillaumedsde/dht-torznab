@@ -109,7 +109,9 @@ class Settings(pydantic.BaseSettings):
     )
 
     class Config:
-        env_prefix = "DHT_TORZNAB__"
+        # NOTE: disabling env prefix for now due to:
+        #       https://github.com/pydantic/pydantic/issues/3807
+        # env_prefix = "DHT_TORZNAB__"
         env_nested_delimiter = "__"
 
 

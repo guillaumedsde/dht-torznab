@@ -116,8 +116,8 @@ services:
       migrations:
         condition: service_completed_successfully
     environment:
-      DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:${POSTGRES_PASSWORD:-torznab}@postgres/"
-      DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
+      PGSQL_DSN: "postgresql+asyncpg://torznab:${POSTGRES_PASSWORD:-torznab}@postgres/"
+      BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
     deploy:
       resources:
         limits:
