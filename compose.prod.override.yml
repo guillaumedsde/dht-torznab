@@ -91,7 +91,7 @@ services:
         target: /var/run/docker.sock
         read_only: true
     tmpfs:
-      - /tmp:mode=770,size=5M,uid=${UID},gid=${GID}
+      - /tmp:mode=770,size=5M,uid=${UID:-1000},gid=${GID:-1000}
     ports:
       - target: 80
         host_ip: 0.0.0.0
