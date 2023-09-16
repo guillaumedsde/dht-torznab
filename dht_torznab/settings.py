@@ -110,6 +110,7 @@ class Settings(pydantic.BaseSettings):
 
     class Config:
         env_prefix = "DHT_TORZNAB__"
+        env_nested_delimiter = "__"
 
 
 @lru_cache
