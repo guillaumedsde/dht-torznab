@@ -51,6 +51,7 @@ services:
       - "--log.level=${TRAEFIK_LOG_LEVEL:-INFO}"
       # docker configuration
       - "--providers.docker=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--providers.docker.exposedbydefault=false"
       # entrypoints
       - "--entrypoints.web.address=:80"
@@ -84,6 +85,10 @@ services:
       - type: bind
         source: ./config/traefik
         target: /config
+        read_only: true
+      - type: bind
+        source: ${DOCKER_SOCKET_HOST_PATH:-/var/run/docker.sock}
+        target: /var/run/docker.sock
         read_only: true
     tmpfs:
       - /tmp:mode=770,size=5M,uid=${UID},gid=${GID}
