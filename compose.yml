@@ -27,7 +27,6 @@ services:
         limits:
           cpus: "2.0"
           memory: 150M
-          pids: 50
 
   magneticod:
     build:
@@ -50,7 +49,6 @@ services:
         limits:
           cpus: "4.0"
           memory: 75M
-          pids: 20
 
   beanstalkd:
     image: guillaumedsde/beanstalkd-distroless:1.13
@@ -75,7 +73,6 @@ services:
         limits:
           cpus: "2.0"
           memory: 100M
-          pids: 5
 
   postgres:
     image: postgres:15-alpine
@@ -101,8 +98,7 @@ services:
       resources:
         limits:
           cpus: "2.0"
-          memory: 750M
-          pids: 400
+          memory: 1G
     healthcheck:
       test:
         - "CMD-SHELL"
@@ -127,7 +123,6 @@ services:
         limits:
           cpus: "1.5"
           memory: 150M
-          pids: 5
 
   migrations:
     <<: *common-dht-torznab
@@ -142,7 +137,6 @@ services:
         limits:
           cpus: "1.0"
           memory: 150M
-          pids: 5
 
   api:
     <<: *common-dht-torznab
@@ -157,8 +151,7 @@ services:
       resources:
         limits:
           cpus: "2.0"
-          memory: 750M
-          pids: 20
+          memory: 1G
 
   # FIXME DRY
   peer_count_updater:
@@ -177,7 +170,6 @@ services:
         limits:
           cpus: "4.0"
           memory: 200M
-          pids: 20
 
 volumes:
   pg-data:

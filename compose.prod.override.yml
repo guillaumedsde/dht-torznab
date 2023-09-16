@@ -1,5 +1,4 @@
 x-common: &common
-  restart: always
   logging:
     driver: "local"
     options:
