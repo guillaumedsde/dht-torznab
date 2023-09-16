@@ -1,5 +1,14 @@
+x-common: &common
+  restart: always
+  logging:
+    driver: "local"
+    options:
+      max-file: "5"
+      max-size: "10m"
+
 services:
   listener: &common-dht-torznab
+    <<: *common
     image: ghcr.io/guillaumedsde/dht-torznab:latest
     build: {}
     entrypoint:
@@ -41,6 +50,7 @@ services:
 
   # reverse proxy
   traefik:
+    <<: *common
     image: traefik:v2.10
     user: 0:${DOCKER_GID:-999}
     cap_add:
