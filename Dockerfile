@@ -52,6 +52,8 @@ FROM base as api
 
 ENTRYPOINT [ "gunicorn" ]
 
+EXPOSE 8080/tcp
+
 FROM base as migrations
 
 ENTRYPOINT [ "alembic" ]
