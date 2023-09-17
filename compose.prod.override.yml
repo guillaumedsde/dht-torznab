@@ -49,6 +49,13 @@ services:
       - dht_torznab.peer_count_updater
     build: {}
 
+  
+  postgres:
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=500"
+
   # reverse proxy
   traefik:
     <<: *common
