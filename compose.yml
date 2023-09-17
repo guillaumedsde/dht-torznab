@@ -27,6 +27,8 @@ services:
         limits:
           cpus: "2.0"
           memory: 150M
+      restart_policy: &restart-policy
+        condition: any
 
   magneticod:
     build:
@@ -45,6 +47,7 @@ services:
       - --indexer-max-neighbors=10000
     network_mode: service:gluetun
     deploy:
+      restart_policy: *restart-policy
       resources:
         limits:
           cpus: "4.0"
@@ -69,6 +72,7 @@ services:
         published: 11300
         protocol: tcp
     deploy:
+      restart_policy: *restart-policy
       resources:
         limits:
           cpus: "2.0"
@@ -95,6 +99,7 @@ services:
       - "-c"
       - "max_connections=500"
     deploy:
+      restart_policy: *restart-policy
       resources:
         limits:
           cpus: "2.0"
@@ -119,6 +124,7 @@ services:
       DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:${POSTGRES_PASSWORD:-torznab}@postgres/"
       DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
     deploy:
+      restart_policy: *restart-policy
       resources:
         limits:
           cpus: "1.5"
@@ -148,6 +154,7 @@ services:
         published: 8080
         protocol: tcp
     deploy:
+      restart_policy: *restart-policy
       resources:
         limits:
           cpus: "2.0"
@@ -166,6 +173,7 @@ services:
         condition: service_healthy
     network_mode: service:gluetun
     deploy:
+      restart_policy: *restart-policy
       resources:
         limits:
           cpus: "4.0"
