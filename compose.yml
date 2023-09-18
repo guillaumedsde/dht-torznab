@@ -26,7 +26,7 @@ services:
       resources:
         limits:
           cpus: "2.0"
-          memory: 150M
+          memory: 500M
       restart_policy: &restart-policy
         condition: any
 
@@ -103,8 +103,8 @@ services:
       restart_policy: *restart-policy
       resources:
         limits:
-          cpus: "3.0"
-          memory: 4G
+          cpus: "2.0"
+          memory: 2G
     healthcheck:
       test:
         - "CMD-SHELL"
