@@ -6,6 +6,9 @@ x-common: &common
       max-size: "10m"
 
 services:
+  gluetun:
+    volumes:
+      - ./config/gluetun/post-rules.txt:/iptables/post-rules.txt:ro
   listener: &common-dht-torznab
     <<: *common
     image: ghcr.io/guillaumedsde/dht-torznab:latest
