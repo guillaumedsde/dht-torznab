@@ -1,2 +1,4 @@
 iptables -I OUTPUT -t raw -p udp --sport 38437 -j NOTRACK
 iptables -I PREROUTING -t raw -p udp --dport 38437 -j NOTRACK
+iptables -I OUTPUT -t raw -p udp --sport 13772 -j NOTRACK
+iptables -I PREROUTING -t raw -p udp --dport 13772 -j NOTRACK
