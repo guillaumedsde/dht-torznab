@@ -45,6 +45,7 @@ services:
       - --leech-max-n=500
       - --indexer-interval=1
       - --indexer-max-neighbors=10000
+      - --indexer-addr=0.0.0.0:${MAGNETICOD_PORT:-0}
     network_mode: service:gluetun
     deploy:
       restart_policy: *restart-policy
