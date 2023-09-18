@@ -124,6 +124,7 @@ services:
     environment:
       DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:${POSTGRES_PASSWORD:-torznab}@postgres/"
       DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
+      DHT_TORZNAB__PEER_COUNT_UPDATER__DHT_UDP_SERVER_PORT: "${PEER_COUNT_UPDATER_PORT}"
     deploy:
       restart_policy: *restart-policy
       resources:
