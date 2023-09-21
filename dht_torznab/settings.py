@@ -112,7 +112,7 @@ class Settings(pydantic.BaseSettings):
         env_prefix = "DHT_TORZNAB__"
         env_nested_delimiter = "__"
         # NOTE: see https://docs.pydantic.dev/1.10/usage/settings/#environment-variable-names
-        case_sensitive=True
+        case_sensitive = True
 
 
 @lru_cache
