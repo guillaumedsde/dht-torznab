@@ -7,20 +7,20 @@ WORKDIR /app
 
 # NOTE: we use a special cache mount for the pip cache
 # hadolint ignore=DL3042
-RUN --mount=type=cache,target=/home/nonroot/.cache,id=pip-cache-poetry-install \
+RUN --mount=type=cache,target=~/.cache,id=pip-cache-poetry-install \
     pip install "poetry==1.4.2"
 
 COPY --chown=nonroot:nonroot pyproject.toml poetry.* ./
 
 # NOTE: add poetry to path
-ARG PATH="$PATH:/home/nonroot/.local/bin"
+ARG PATH="$PATH:~/.local/bin"
 ARG POETRY_NO_INTERACTION=true
 ARG POETRY_VIRTUALENVS_OPTIONS_NO_SETUPTOOLS=true
 ARG POETRY_VIRTUALENVS_OPTIONS_NO_PIP=true
 ARG POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=true
 
 # FIXME: figure out why cache is not working
-RUN --mount=type=cache,target=/home/nonroot/.cache,id=poetry-install \
+RUN --mount=type=cache,target=~/.cache,id=poetry-install \
     poetry install --sync --no-root --only main \
     && rm -rf .venv/pyvenv.cfg .venv/src .venv/.gitignore
 
