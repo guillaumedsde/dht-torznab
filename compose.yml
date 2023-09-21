@@ -179,7 +179,7 @@ services:
       resources:
         limits:
           cpus: "4.0"
-          memory: 200M
+          memory: 500M
 
 volumes:
   pg-data:
