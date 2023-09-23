@@ -1,6 +1,7 @@
 import asyncio
 import os
 import sysconfig
+from collections.abc import Iterable
 from logging.config import fileConfig
 from pathlib import Path
 
@@ -29,9 +30,27 @@ target_metadata = models.metadata
 # can be acquired:
 # ... etc.
 
+def include_name(name: str, type_: str, parent_names: Iterable[str]) -> bool: # noqa: ARG001
+    """Whether or not schema should be inspected when generating alembic migrations.
+
+    Notes:
+        Gotten from https://alembic.sqlalchemy.org/en/latest/autogenerate.html#omitting-schema-names-from-the-autogenerate-process
+
+    Args:
+        name: of the schema.
+        type_: to check whether we are inspecting a schema
+        parent_names: name of the parent DB entities?
+
+    Returns:
+        bool: whether the schema should be inspected
+    """
+    if type_ == "schema":
+        return name == models.metadata.schema
+    return True
+
 
 @write_hooks.register("ruff")
-def run_ruff(filename: str, options: list[str]) -> None:  # noqa: ARG001
+def run_ruff(filename: str, options: list[str]) -> None: # noqa: ARG001
     """Ruff hook for alembic, runs ruff on newly generated migration.
 
     Notes:
@@ -46,7 +65,7 @@ def run_ruff(filename: str, options: list[str]) -> None:  # noqa: ARG001
     ruff = Path(sysconfig.get_path("scripts")) / "ruff"
     # NOTE: spawning process without shell is acceptable
     #       since input string comes from configuration.
-    os.spawnv(  # noqa: S606
+    os.spawnv( # noqa: S606
         os.P_WAIT,
         ruff,
         [str(ruff), filename, "--fix", "--exit-zero"],
@@ -87,6 +106,11 @@ def do_run_migrations(connection: Connection) -> None:
         connection=connection,
         target_metadata=target_metadata,
         version_table_schema=target_metadata.schema,
+        # NOTE: explicitely include only our schema since it is not
+        #       the default one, see:
+        #       https://alembic.sqlalchemy.org/en/latest/autogenerate.html#omitting-schema-names-from-the-autogenerate-process
+        include_schemas=True,
+        include_name=include_name,
     )
 
     if target_metadata.schema:
