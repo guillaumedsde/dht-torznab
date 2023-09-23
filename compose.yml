@@ -105,6 +105,9 @@ services:
         limits:
           cpus: "4.0"
           memory: 4G
+    # NOTE: need higher than default (64MB) value 
+    #       for large table VACUUM ANALYZE
+    shm_size: 128M 
     healthcheck:
       test:
         - "CMD-SHELL"
