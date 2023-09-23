@@ -23,18 +23,14 @@ async def search_torrents(
     Returns:
         Generator of pydantic schemas for torrent results.
     """
-    statement = (
-        select(
-            models.TorrentsModel.id,
-            models.TorrentsModel.name,
-            models.TorrentsModel.created_at,
-            models.TorrentsModel.info_hash,
-            models.TorrentsModel.peer_count,
-            func.count(models.FilesModel.torrent_id).label("file_count"),
-            func.sum(models.FilesModel.size).label("size"),
-        )
-        .join(models.FilesModel)
-        .group_by(models.TorrentsModel.id)
+    statement = select(
+        models.TorrentsModel.id,
+        models.TorrentsModel.name,
+        models.TorrentsModel.created_at,
+        models.TorrentsModel.info_hash,
+        models.TorrentsModel.peer_count,
+        models.TorrentsModel.file_count,
+        models.TorrentsModel.total_size_in_bytes.label("size"),
     )
 
     if limit:
@@ -46,7 +42,7 @@ async def search_torrents(
     if search_query:
         tsquery = func.plainto_tsquery(models.PGSQL_DICTIONARY, search_query)
         rank_function = func.ts_rank(models.TorrentsModel.search_vector, tsquery)
-
+        # TODO: this is slow because we have to rank every DB entry
         statement = statement.where(
             rank_function >= get_settings().API.MIN_SEARCH_RESULT_RANK,
         ).order_by(
