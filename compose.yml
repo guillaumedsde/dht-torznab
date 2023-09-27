@@ -42,9 +42,9 @@ services:
     command:
       - --database=beanstalkd://beanstalkd:11300/magneticod_tube
       - --verbose
-      - --leech-max-n=500
+      - --leech-max-n=250
       - --indexer-interval=1
-      - --indexer-max-neighbors=10000
+      - --indexer-max-neighbors=5000
       - --indexer-addr=0.0.0.0:${MAGNETICOD_PORT:-0}
     network_mode: service:gluetun
     deploy:
@@ -125,6 +125,7 @@ services:
       DHT_TORZNAB__PGSQL_DSN: "postgresql+asyncpg://torznab:${POSTGRES_PASSWORD:-torznab}@postgres/"
       DHT_TORZNAB__BEANSTALKD_URL: "beanstalkd://beanstalkd:11300/magneticod_tube"
       DHT_TORZNAB__PEER_COUNT_UPDATER__DHT_UDP_SERVER_PORT: "${PEER_COUNT_UPDATER_PORT}"
+      DHT_TORZNAB__PEER_COUNT_UPDATER__ASYNCIO_COROUTINES: "100"
     deploy:
       restart_policy: *restart-policy
       resources:
