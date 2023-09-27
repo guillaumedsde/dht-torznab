@@ -30,7 +30,12 @@ target_metadata = models.metadata
 # can be acquired:
 # ... etc.
 
-def include_name(name: str, type_: str, parent_names: Iterable[str]) -> bool: # noqa: ARG001
+
+def include_name(
+    name: str,
+    type_: str,
+    parent_names: Iterable[str],  # noqa: ARG001
+) -> bool:
     """Whether or not schema should be inspected when generating alembic migrations.
 
     Notes:
@@ -50,7 +55,7 @@ def include_name(name: str, type_: str, parent_names: Iterable[str]) -> bool: # 
 
 
 @write_hooks.register("ruff")
-def run_ruff(filename: str, options: list[str]) -> None: # noqa: ARG001
+def run_ruff(filename: str, options: list[str]) -> None:  # noqa: ARG001
     """Ruff hook for alembic, runs ruff on newly generated migration.
 
     Notes:
@@ -65,7 +70,7 @@ def run_ruff(filename: str, options: list[str]) -> None: # noqa: ARG001
     ruff = Path(sysconfig.get_path("scripts")) / "ruff"
     # NOTE: spawning process without shell is acceptable
     #       since input string comes from configuration.
-    os.spawnv( # noqa: S606
+    os.spawnv(  # noqa: S606
         os.P_WAIT,
         ruff,
         [str(ruff), filename, "--fix", "--exit-zero"],
@@ -110,7 +115,8 @@ def do_run_migrations(connection: Connection) -> None:
         #       the default one, see:
         #       https://alembic.sqlalchemy.org/en/latest/autogenerate.html#omitting-schema-names-from-the-autogenerate-process
         include_schemas=True,
-        include_name=include_name,
+        # NOTE: fix better type definition
+        include_name=include_name,  # type: ignore[arg-type]
     )
 
     if target_metadata.schema:

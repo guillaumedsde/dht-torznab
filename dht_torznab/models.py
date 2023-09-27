@@ -60,6 +60,8 @@ class TorrentsModel(Base):
     # TODO: check constraints for these
     occurence_count: Mapped[int] = mapped_column(default=1)
     peer_count: Mapped[int | None] = mapped_column(default=None, nullable=True)
+    total_size_in_bytes: Mapped[int] = mapped_column(sqlalchemy.BIGINT)
+    file_count: Mapped[int] = mapped_column()
 
     search_vector = mapped_column(
         TSVectorType("name", regconfig=PGSQL_DICTIONARY),

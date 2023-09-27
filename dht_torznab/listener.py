@@ -34,6 +34,9 @@ async def _insert_torrent(session: AsyncSession, torrent: dict[str, Any]) -> int
             name=torrent["name"],
             info_hash=binascii.unhexlify(torrent["infoHash"]),
             search_vector=_build_pgsql_search_vector(torrent["name"]),
+            # TODO: compute this DB side by deferring constraint?
+            file_count=len(torrent["files"]),
+            total_size_in_bytes=sum(file["size"] for file in torrent["files"]),
         )
         .on_conflict_do_update(
             constraint=models.UNIQUE_INFO_HASH_CONSTRAINT_NAME,
