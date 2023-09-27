@@ -115,7 +115,8 @@ def do_run_migrations(connection: Connection) -> None:
         #       the default one, see:
         #       https://alembic.sqlalchemy.org/en/latest/autogenerate.html#omitting-schema-names-from-the-autogenerate-process
         include_schemas=True,
-        include_name=include_name,
+        # NOTE: fix better type definition
+        include_name=include_name,  # type: ignore[arg-type]
     )
 
     if target_metadata.schema:
