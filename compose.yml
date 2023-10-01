@@ -57,17 +57,22 @@ services:
   beanstalkd:
     image: guillaumedsde/beanstalkd-distroless:1.13
     command:
-      - -b
-      - /data
-      - -V
-      - -f
-      - "2400000"
-      - -z
-      - "10000000"
-    volumes:
-      - type: volume
-        source: beanstalkd-binlog
-        target: /data
+      # NOTE: disabling binlog due to memory leak, see:
+      #       https://github.com/beanstalkd/beanstalkd/issues/622
+      # - -b
+      # - /data
+      # NOTE: never fsync (since binlog is disabled)
+      - "-F"
+      - "-z"
+      - "500000"
+      # NOTE: increase verbosity
+      - "-V"
+    # NOTE: disabling binlog due to memory leak, see:
+    #       https://github.com/beanstalkd/beanstalkd/issues/622
+    # volumes:
+    #   - type: volume
+    #     source: beanstalkd-binlog
+    #     target: /data
     ports:
       - target: 11300
         published: 11300
@@ -187,4 +192,6 @@ services:
 
 volumes:
   pg-data:
-  beanstalkd-binlog:
+  # NOTE: disabling binlog due to memory leak, see:
+  #       https://github.com/beanstalkd/beanstalkd/issues/622 
+  # beanstalkd-binlog:
